@@ -1,0 +1,11 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cellitBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FB8500"/>
+      <stop offset="1" stop-color="#FFB703"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="224" fill="url(#cellitBg)"/>
+  <path d="M 741.8 704.8 A 300 300 0 1 1 741.8 319.2" fill="none" stroke="#FFFFFF" stroke-width="150" stroke-linecap="round"/>
+  <circle cx="812" cy="512" r="80" fill="#023047"/>
+</svg>
