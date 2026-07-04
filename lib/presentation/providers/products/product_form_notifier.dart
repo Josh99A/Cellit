@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/di/app_providers.dart';
 import '../../../core/common/result.dart';
+import '../../../core/services/image/image_file_service.dart';
 import '../../../core/utilities/console_logger.dart';
 import '../../../domain/entities/product_entity.dart';
+import '../../../domain/usecases/params/image_upload_params.dart';
 import '../../../domain/usecases/product_usecases.dart';
 import '../../../domain/usecases/storage_usecases.dart';
 import '../auth/auth_notifier.dart';
@@ -56,14 +58,24 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
   Future<Result<int>> createProduct() async {
     try {
       final userId = _requireUserId();
+      final pingService = ref.read(pingServiceProvider);
       final storageRepository = ref.read(storageRepositoryProvider);
       final productRepository = ref.read(productRepositoryProvider);
 
       var imageUrl = state.imageUrl;
+      String? queuedImagePath;
 
       if (state.imageFile != null) {
-        final res = await UploadProductImageUsecase(storageRepository).call(state.imageFile!.path);
-        imageUrl = res.data;
+        if (pingService.isKnownOffline) {
+          // Persist the image locally and queue the upload for when connection returns
+          queuedImagePath = await ImageFileService.persistImage(state.imageFile!.path);
+          imageUrl = queuedImagePath;
+        } else {
+          final res = await UploadProductImageUsecase(storageRepository).call(state.imageFile!.path);
+          if (res.isFailure) return Result.failure(error: res.error!);
+
+          imageUrl = res.data;
+        }
       }
 
       cl('imageUrl $imageUrl');
@@ -79,6 +91,14 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
 
       var res = await CreateProductUsecase(productRepository).call(product);
 
+      if (res.isSuccess && queuedImagePath != null) {
+        final queueRes = await QueueProductImageUploadUsecase(storageRepository).call(
+          ProductImageUploadParams(productId: res.data!, imagePath: queuedImagePath),
+        );
+
+        if (queueRes.isFailure) cl('Failed to queue product image upload: ${queueRes.error}');
+      }
+
       // Refresh products
       ref.read(productsNotifierProvider.notifier).getAllProducts();
 
@@ -91,14 +111,24 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
   Future<Result<void>> updatedProduct(int id) async {
     try {
       final userId = _requireUserId();
+      final pingService = ref.read(pingServiceProvider);
       final storageRepository = ref.read(storageRepositoryProvider);
       final productRepository = ref.read(productRepositoryProvider);
 
       var imageUrl = state.imageUrl;
+      String? queuedImagePath;
 
       if (state.imageFile != null) {
-        final res = await UploadProductImageUsecase(storageRepository).call(state.imageFile!.path);
-        imageUrl = res.data;
+        if (pingService.isKnownOffline) {
+          // Persist the image locally and queue the upload for when connection returns
+          queuedImagePath = await ImageFileService.persistImage(state.imageFile!.path);
+          imageUrl = queuedImagePath;
+        } else {
+          final res = await UploadProductImageUsecase(storageRepository).call(state.imageFile!.path);
+          if (res.isFailure) return Result.failure(error: res.error!);
+
+          imageUrl = res.data;
+        }
       }
 
       cl('imageUrl $imageUrl');
@@ -114,6 +144,14 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
       );
 
       var res = await UpdateProductUsecase(productRepository).call(product);
+
+      if (res.isSuccess && queuedImagePath != null) {
+        final queueRes = await QueueProductImageUploadUsecase(storageRepository).call(
+          ProductImageUploadParams(productId: id, imagePath: queuedImagePath),
+        );
+
+        if (queueRes.isFailure) cl('Failed to queue product image upload: ${queueRes.error}');
+      }
 
       // Refresh products
       ref.read(productsNotifierProvider.notifier).getAllProducts();

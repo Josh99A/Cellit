@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:cellit/core/common/result.dart';
 import 'package:cellit/core/services/connectivity/ping_service.dart';
+import 'package:cellit/data/datasources/local/queued_action_local_datasource_impl.dart';
 import 'package:cellit/data/datasources/remote/storage_remote_datasource_impl.dart';
+import 'package:cellit/data/models/queued_action_model.dart';
 import 'package:cellit/data/repositories/storage_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -12,24 +16,34 @@ import 'storage_repository_impl_test.mocks.dart';
 @GenerateMocks([
   PingService,
   StorageRemoteDataSourceImpl,
+  QueuedActionLocalDatasourceImpl,
 ])
 void main() {
   late StorageRepositoryImpl repository;
   late MockPingService mockPingService;
   late MockStorageRemoteDataSourceImpl mockStorageRemoteDataSource;
+  late MockQueuedActionLocalDatasourceImpl mockQueuedActionLocalDatasource;
 
   setUp(() {
     mockPingService = MockPingService();
     mockStorageRemoteDataSource = MockStorageRemoteDataSourceImpl();
+    mockQueuedActionLocalDatasource = MockQueuedActionLocalDatasourceImpl();
+
+    // Connection is not known to be offline by default
+    when(mockPingService.isKnownOffline).thenReturn(false);
 
     // Provide dummy values for Mockito
     provideDummy<Result<String>>(
       Result.success(data: ''),
     );
+    provideDummy<Result<int>>(
+      Result.success(data: 0),
+    );
 
     repository = StorageRepositoryImpl(
       pingService: mockPingService,
       storageRemoteDataSource: mockStorageRemoteDataSource,
+      queuedActionLocalDatasource: mockQueuedActionLocalDatasource,
     );
   });
 
@@ -47,18 +61,31 @@ void main() {
 
       expect(result.isSuccess, true);
       expect(result.data, uploadedUrl);
-      verify(mockPingService.isConnected).called(1);
+      verify(mockPingService.isKnownOffline).called(1);
       verify(mockStorageRemoteDataSource.uploadUserPhoto(imgPath)).called(1);
     });
 
     test('returns failure with no internet message when not connected', () async {
-      when(mockPingService.isConnected).thenReturn(false);
+      when(mockPingService.isKnownOffline).thenReturn(true);
 
       final result = await repository.uploadUserPhoto(imgPath);
 
       expect(result.isFailure, true);
-      verify(mockPingService.isConnected).called(1);
+      verify(mockPingService.isKnownOffline).called(1);
       verifyNever(mockStorageRemoteDataSource.uploadUserPhoto(any));
+    });
+
+    test('attempts upload when connection status is not known yet', () async {
+      when(mockPingService.isKnownOffline).thenReturn(false);
+      when(
+        mockStorageRemoteDataSource.uploadUserPhoto(imgPath),
+      ).thenAnswer((_) async => Result.success(data: uploadedUrl));
+
+      final result = await repository.uploadUserPhoto(imgPath);
+
+      expect(result.isSuccess, true);
+      expect(result.data, uploadedUrl);
+      verify(mockStorageRemoteDataSource.uploadUserPhoto(imgPath)).called(1);
     });
 
     test('returns failure when remote datasource fails', () async {
@@ -129,18 +156,31 @@ void main() {
 
       expect(result.isSuccess, true);
       expect(result.data, uploadedUrl);
-      verify(mockPingService.isConnected).called(1);
+      verify(mockPingService.isKnownOffline).called(1);
       verify(mockStorageRemoteDataSource.uploadProductImage(imgPath)).called(1);
     });
 
     test('returns failure with no internet message when not connected', () async {
-      when(mockPingService.isConnected).thenReturn(false);
+      when(mockPingService.isKnownOffline).thenReturn(true);
 
       final result = await repository.uploadProductImage(imgPath);
 
       expect(result.isFailure, true);
-      verify(mockPingService.isConnected).called(1);
+      verify(mockPingService.isKnownOffline).called(1);
       verifyNever(mockStorageRemoteDataSource.uploadProductImage(any));
+    });
+
+    test('attempts upload when connection status is not known yet', () async {
+      when(mockPingService.isKnownOffline).thenReturn(false);
+      when(
+        mockStorageRemoteDataSource.uploadProductImage(imgPath),
+      ).thenAnswer((_) async => Result.success(data: uploadedUrl));
+
+      final result = await repository.uploadProductImage(imgPath);
+
+      expect(result.isSuccess, true);
+      expect(result.data, uploadedUrl);
+      verify(mockStorageRemoteDataSource.uploadProductImage(imgPath)).called(1);
     });
 
     test('returns failure when remote datasource fails', () async {
@@ -257,7 +297,7 @@ void main() {
       expect(result1.isSuccess, true);
 
       // Connection lost for second upload
-      when(mockPingService.isConnected).thenReturn(false);
+      when(mockPingService.isKnownOffline).thenReturn(true);
 
       final result2 = await repository.uploadProductImage(imgPath);
       expect(result2.isFailure, true);
@@ -296,6 +336,68 @@ void main() {
 
       expect(result.isFailure, true);
       expect(result.error, isA<FormatException>());
+    });
+  });
+
+  group('queueProductImageUpload', () {
+    test('creates queued action with product id and image path', () async {
+      when(mockQueuedActionLocalDatasource.createQueuedAction(any)).thenAnswer((_) async => Result.success(data: 1));
+
+      final result = await repository.queueProductImageUpload(7, '/local/image.jpg');
+
+      expect(result.isSuccess, true);
+
+      final captured =
+          verify(mockQueuedActionLocalDatasource.createQueuedAction(captureAny)).captured.single as QueuedActionModel;
+      expect(captured.repository, 'StorageRepositoryImpl');
+      expect(captured.method, 'uploadProductImage');
+      expect(captured.isCritical, true);
+
+      final param = jsonDecode(captured.param);
+      expect(param['productId'], 7);
+      expect(param['imagePath'], '/local/image.jpg');
+    });
+
+    test('returns failure when datasource fails', () async {
+      when(
+        mockQueuedActionLocalDatasource.createQueuedAction(any),
+      ).thenAnswer((_) async => Result.failure(error: 'DB error'));
+
+      final result = await repository.queueProductImageUpload(7, '/local/image.jpg');
+
+      expect(result.isFailure, true);
+      expect(result.error, 'DB error');
+    });
+  });
+
+  group('queueUserPhotoUpload', () {
+    test('creates queued action with user id and image path', () async {
+      when(mockQueuedActionLocalDatasource.createQueuedAction(any)).thenAnswer((_) async => Result.success(data: 1));
+
+      final result = await repository.queueUserPhotoUpload('user123', '/local/photo.jpg');
+
+      expect(result.isSuccess, true);
+
+      final captured =
+          verify(mockQueuedActionLocalDatasource.createQueuedAction(captureAny)).captured.single as QueuedActionModel;
+      expect(captured.repository, 'StorageRepositoryImpl');
+      expect(captured.method, 'uploadUserPhoto');
+      expect(captured.isCritical, true);
+
+      final param = jsonDecode(captured.param);
+      expect(param['userId'], 'user123');
+      expect(param['imagePath'], '/local/photo.jpg');
+    });
+
+    test('returns failure when datasource fails', () async {
+      when(
+        mockQueuedActionLocalDatasource.createQueuedAction(any),
+      ).thenAnswer((_) async => Result.failure(error: 'DB error'));
+
+      final result = await repository.queueUserPhotoUpload('user123', '/local/photo.jpg');
+
+      expect(result.isFailure, true);
+      expect(result.error, 'DB error');
     });
   });
 }

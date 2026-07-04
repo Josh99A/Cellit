@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/themes/app_sizes.dart';
+import '../../../../core/utilities/app_image_utils.dart';
 import '../../../../core/utilities/currency_formatter.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/app_dialog.dart';
@@ -181,6 +182,7 @@ class _OrderCardState extends State<OrderCard> {
                     width: 70,
                     height: 70,
                     image: widget.imageUrl,
+                    imgProvider: AppImageUtils.providerFor(widget.imageUrl),
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(width: 0.5, color: Theme.of(context).colorScheme.surfaceContainerHighest),
                     backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,

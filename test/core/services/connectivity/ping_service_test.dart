@@ -20,6 +20,11 @@ void main() {
       expect(pingService.isConnected, false);
     });
 
+    test('isKnownOffline should return false when no latencies', () {
+      expect(pingService.hasPingData, false);
+      expect(pingService.isKnownOffline, false);
+    });
+
     test('should start ping process', () async {
       await pingService.startPing(
         host: '8.8.8.8',

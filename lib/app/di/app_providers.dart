@@ -109,6 +109,7 @@ final storageRepositoryProvider = Provider<StorageRepository>(
   (ref) => StorageRepositoryImpl(
     pingService: ref.watch(pingServiceProvider),
     storageRemoteDataSource: ref.watch(storageRemoteDataSourceProvider),
+    queuedActionLocalDatasource: ref.watch(queuedActionLocalDatasourceProvider),
   ),
 );
 final productRepositoryProvider = Provider<ProductRepository>(
@@ -142,5 +143,8 @@ final queuedActionRepositoryProvider = Provider<QueuedActionRepository>(
     userRemoteDatasource: ref.watch(userRemoteDatasourceProvider),
     transactionRemoteDatasource: ref.watch(transactionRemoteDatasourceProvider),
     productRemoteDatasource: ref.watch(productRemoteDatasourceProvider),
+    storageRemoteDataSource: ref.watch(storageRemoteDataSourceProvider),
+    productLocalDatasource: ref.watch(productLocalDatasourceProvider),
+    userLocalDatasource: ref.watch(userLocalDatasourceProvider),
   ),
 );

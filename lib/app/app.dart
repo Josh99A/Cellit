@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/locale/app_locale.dart';
+import '../presentation/providers/currency/currency_notifier.dart';
 import '../presentation/providers/theme/theme_notifier.dart';
 import 'di/app_providers.dart';
 import 'error/error_handler_builder.dart';
@@ -14,6 +15,9 @@ class App extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeNotifierProvider.select((s) => s.themeData));
     final router = ref.watch(appRoutesProvider).router;
+
+    // Rebuild the whole tree when the selected currency changes so all price displays refresh
+    ref.watch(currencyNotifierProvider);
 
     return MaterialApp.router(
       title: 'Cellit',

@@ -1,12 +1,17 @@
 import 'dart:convert';
+import 'dart:io';
 
 import '../../core/common/result.dart';
 import '../../core/services/connectivity/ping_service.dart';
+import '../../core/services/image/image_file_service.dart';
 import '../../core/utilities/console_logger.dart';
 import '../../domain/entities/queued_action_entity.dart';
 import '../../domain/repositories/queued_action_repository.dart';
+import '../datasources/local/product_local_datasource_impl.dart';
 import '../datasources/local/queued_action_local_datasource_impl.dart';
+import '../datasources/local/user_local_datasource_impl.dart';
 import '../datasources/remote/product_remote_datasource_impl.dart';
+import '../datasources/remote/storage_remote_datasource_impl.dart';
 import '../datasources/remote/transaction_remote_datasource_impl.dart';
 import '../datasources/remote/user_remote_datasource_impl.dart';
 import '../models/product_model.dart';
@@ -20,6 +25,9 @@ class QueuedActionRepositoryImpl extends QueuedActionRepository {
   final UserRemoteDatasourceImpl userRemoteDatasource;
   final TransactionRemoteDatasourceImpl transactionRemoteDatasource;
   final ProductRemoteDatasourceImpl productRemoteDatasource;
+  final StorageRemoteDataSourceImpl storageRemoteDataSource;
+  final ProductLocalDatasourceImpl productLocalDatasource;
+  final UserLocalDatasourceImpl userLocalDatasource;
 
   QueuedActionRepositoryImpl({
     required this.pingService,
@@ -27,6 +35,9 @@ class QueuedActionRepositoryImpl extends QueuedActionRepository {
     required this.userRemoteDatasource,
     required this.transactionRemoteDatasource,
     required this.productRemoteDatasource,
+    required this.storageRemoteDataSource,
+    required this.productLocalDatasource,
+    required this.userLocalDatasource,
   });
 
   @override
@@ -168,6 +179,70 @@ class QueuedActionRepositoryImpl extends QueuedActionRepository {
 
           final res = await productRemoteDatasource.updateProduct(param);
           if (res.isFailure) return Result.failure(error: res.error!);
+
+          return Result.success(data: null);
+        }
+      }
+
+      if (queue.repository == 'StorageRepositoryImpl') {
+        if (queue.method == 'uploadProductImage') {
+          final param = jsonDecode(queue.param);
+          final int productId = param['productId'];
+          final String imagePath = param['imagePath'];
+
+          // Image file no longer exists, nothing to upload; clear the queue
+          if (!File(imagePath).existsSync()) return Result.success(data: null);
+
+          final upload = await storageRemoteDataSource.uploadProductImage(imagePath);
+          if (upload.isFailure) return Result.failure(error: upload.error!);
+
+          final local = await productLocalDatasource.getProduct(productId);
+          if (local.isFailure) return Result.failure(error: local.error!);
+
+          final product = local.data;
+
+          if (product != null) {
+            product.imageUrl = upload.data!;
+
+            final localUpdate = await productLocalDatasource.updateProduct(product);
+            if (localUpdate.isFailure) return Result.failure(error: localUpdate.error!);
+
+            final remoteUpdate = await productRemoteDatasource.updateProduct(product);
+            if (remoteUpdate.isFailure) return Result.failure(error: remoteUpdate.error!);
+          }
+
+          await ImageFileService.deleteImage(imagePath);
+
+          return Result.success(data: null);
+        }
+
+        if (queue.method == 'uploadUserPhoto') {
+          final param = jsonDecode(queue.param);
+          final String userId = param['userId'];
+          final String imagePath = param['imagePath'];
+
+          // Image file no longer exists, nothing to upload; clear the queue
+          if (!File(imagePath).existsSync()) return Result.success(data: null);
+
+          final upload = await storageRemoteDataSource.uploadUserPhoto(imagePath);
+          if (upload.isFailure) return Result.failure(error: upload.error!);
+
+          final local = await userLocalDatasource.getUser(userId);
+          if (local.isFailure) return Result.failure(error: local.error!);
+
+          final user = local.data;
+
+          if (user != null) {
+            user.imageUrl = upload.data!;
+
+            final localUpdate = await userLocalDatasource.updateUser(user);
+            if (localUpdate.isFailure) return Result.failure(error: localUpdate.error!);
+
+            final remoteUpdate = await userRemoteDatasource.updateUser(user);
+            if (remoteUpdate.isFailure) return Result.failure(error: remoteUpdate.error!);
+          }
+
+          await ImageFileService.deleteImage(imagePath);
 
           return Result.success(data: null);
         }

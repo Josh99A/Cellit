@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cellit/core/services/connectivity/ping_service.dart';
 import 'package:cellit/core/common/result.dart';
+import 'package:cellit/data/datasources/local/product_local_datasource_impl.dart';
 import 'package:cellit/data/datasources/local/queued_action_local_datasource_impl.dart';
+import 'package:cellit/data/datasources/local/user_local_datasource_impl.dart';
 import 'package:cellit/data/datasources/remote/product_remote_datasource_impl.dart';
+import 'package:cellit/data/datasources/remote/storage_remote_datasource_impl.dart';
 import 'package:cellit/data/datasources/remote/transaction_remote_datasource_impl.dart';
 import 'package:cellit/data/datasources/remote/user_remote_datasource_impl.dart';
 import 'package:cellit/data/models/product_model.dart';
@@ -25,6 +29,9 @@ import 'queued_action_repository_impl_test.mocks.dart';
   UserRemoteDatasourceImpl,
   TransactionRemoteDatasourceImpl,
   ProductRemoteDatasourceImpl,
+  StorageRemoteDataSourceImpl,
+  ProductLocalDatasourceImpl,
+  UserLocalDatasourceImpl,
 ])
 void main() {
   late QueuedActionRepositoryImpl repository;
@@ -33,6 +40,9 @@ void main() {
   late MockUserRemoteDatasourceImpl mockUserRemoteDatasource;
   late MockTransactionRemoteDatasourceImpl mockTransactionRemoteDatasource;
   late MockProductRemoteDatasourceImpl mockProductRemoteDatasource;
+  late MockStorageRemoteDataSourceImpl mockStorageRemoteDataSource;
+  late MockProductLocalDatasourceImpl mockProductLocalDatasource;
+  late MockUserLocalDatasourceImpl mockUserLocalDatasource;
 
   setUp(() {
     mockPingService = MockPingService();
@@ -40,6 +50,9 @@ void main() {
     mockUserRemoteDatasource = MockUserRemoteDatasourceImpl();
     mockTransactionRemoteDatasource = MockTransactionRemoteDatasourceImpl();
     mockProductRemoteDatasource = MockProductRemoteDatasourceImpl();
+    mockStorageRemoteDataSource = MockStorageRemoteDataSourceImpl();
+    mockProductLocalDatasource = MockProductLocalDatasourceImpl();
+    mockUserLocalDatasource = MockUserLocalDatasourceImpl();
 
     // Provide dummy values for Mockito
     provideDummy<Result<List<QueuedActionModel>>>(
@@ -90,6 +103,12 @@ void main() {
         ),
       ),
     );
+    provideDummy<Result<ProductModel?>>(
+      Result.success(data: null),
+    );
+    provideDummy<Result<UserModel?>>(
+      Result.success(data: null),
+    );
 
     repository = QueuedActionRepositoryImpl(
       pingService: mockPingService,
@@ -97,6 +116,9 @@ void main() {
       userRemoteDatasource: mockUserRemoteDatasource,
       transactionRemoteDatasource: mockTransactionRemoteDatasource,
       productRemoteDatasource: mockProductRemoteDatasource,
+      storageRemoteDataSource: mockStorageRemoteDataSource,
+      productLocalDatasource: mockProductLocalDatasource,
+      userLocalDatasource: mockUserLocalDatasource,
     );
   });
 
@@ -628,6 +650,135 @@ void main() {
 
       expect(result.isFailure, true);
       verifyNever(mockQueuedActionDatasource.deleteQueuedAction(any));
+    });
+  });
+
+  group('executeQueuedAction - StorageRepositoryImpl', () {
+    test('clears uploadProductImage queue when image file is missing', () async {
+      final queue = QueuedActionEntity(
+        id: 1,
+        repository: 'StorageRepositoryImpl',
+        method: 'uploadProductImage',
+        param: jsonEncode({'productId': 1, 'imagePath': '/nonexistent/image.jpg'}),
+        isCritical: true,
+        createdAt: '2025-01-01T10:00:00Z',
+      );
+
+      when(mockQueuedActionDatasource.deleteQueuedAction(1)).thenAnswer((_) async => Result.success(data: null));
+
+      final result = await repository.executeQueuedAction(queue);
+
+      expect(result.isSuccess, true);
+      verifyNever(mockStorageRemoteDataSource.uploadProductImage(any));
+      verify(mockQueuedActionDatasource.deleteQueuedAction(1)).called(1);
+    });
+
+    test('executes uploadProductImage and patches product with uploaded URL', () async {
+      const uploadedUrl = 'https://storage.example.com/products/image.jpg';
+
+      final imageFile = File('${Directory.systemTemp.path}/queued_product_image_test.jpg');
+      await imageFile.writeAsBytes([0, 1, 2]);
+
+      final product = ProductModel(
+        id: 1,
+        createdById: 'user123',
+        name: 'Product',
+        imageUrl: imageFile.path,
+        stock: 1,
+        sold: 0,
+        price: 1000,
+      );
+
+      final queue = QueuedActionEntity(
+        id: 2,
+        repository: 'StorageRepositoryImpl',
+        method: 'uploadProductImage',
+        param: jsonEncode({'productId': 1, 'imagePath': imageFile.path}),
+        isCritical: true,
+        createdAt: '2025-01-01T10:00:00Z',
+      );
+
+      when(
+        mockStorageRemoteDataSource.uploadProductImage(imageFile.path),
+      ).thenAnswer((_) async => Result.success(data: uploadedUrl));
+      when(mockProductLocalDatasource.getProduct(1)).thenAnswer((_) async => Result.success(data: product));
+      when(mockProductLocalDatasource.updateProduct(any)).thenAnswer((_) async => Result.success(data: null));
+      when(mockProductRemoteDatasource.updateProduct(any)).thenAnswer((_) async => Result.success(data: null));
+      when(mockQueuedActionDatasource.deleteQueuedAction(2)).thenAnswer((_) async => Result.success(data: null));
+
+      final result = await repository.executeQueuedAction(queue);
+
+      expect(result.isSuccess, true);
+      expect(product.imageUrl, uploadedUrl);
+      expect(imageFile.existsSync(), false);
+      verify(mockProductLocalDatasource.updateProduct(product)).called(1);
+      verify(mockProductRemoteDatasource.updateProduct(product)).called(1);
+      verify(mockQueuedActionDatasource.deleteQueuedAction(2)).called(1);
+    });
+
+    test('executes uploadUserPhoto and patches user with uploaded URL', () async {
+      const uploadedUrl = 'https://storage.example.com/users/photo.jpg';
+
+      final imageFile = File('${Directory.systemTemp.path}/queued_user_photo_test.jpg');
+      await imageFile.writeAsBytes([0, 1, 2]);
+
+      final user = UserModel(
+        id: 'user123',
+        name: 'Joshua',
+        imageUrl: imageFile.path,
+      );
+
+      final queue = QueuedActionEntity(
+        id: 3,
+        repository: 'StorageRepositoryImpl',
+        method: 'uploadUserPhoto',
+        param: jsonEncode({'userId': 'user123', 'imagePath': imageFile.path}),
+        isCritical: true,
+        createdAt: '2025-01-01T10:00:00Z',
+      );
+
+      when(
+        mockStorageRemoteDataSource.uploadUserPhoto(imageFile.path),
+      ).thenAnswer((_) async => Result.success(data: uploadedUrl));
+      when(mockUserLocalDatasource.getUser('user123')).thenAnswer((_) async => Result.success(data: user));
+      when(mockUserLocalDatasource.updateUser(any)).thenAnswer((_) async => Result.success(data: null));
+      when(mockUserRemoteDatasource.updateUser(any)).thenAnswer((_) async => Result.success(data: null));
+      when(mockQueuedActionDatasource.deleteQueuedAction(3)).thenAnswer((_) async => Result.success(data: null));
+
+      final result = await repository.executeQueuedAction(queue);
+
+      expect(result.isSuccess, true);
+      expect(user.imageUrl, uploadedUrl);
+      expect(imageFile.existsSync(), false);
+      verify(mockUserLocalDatasource.updateUser(user)).called(1);
+      verify(mockUserRemoteDatasource.updateUser(user)).called(1);
+      verify(mockQueuedActionDatasource.deleteQueuedAction(3)).called(1);
+    });
+
+    test('does not clear queue when upload fails', () async {
+      final imageFile = File('${Directory.systemTemp.path}/queued_failed_upload_test.jpg');
+      await imageFile.writeAsBytes([0, 1, 2]);
+
+      final queue = QueuedActionEntity(
+        id: 4,
+        repository: 'StorageRepositoryImpl',
+        method: 'uploadProductImage',
+        param: jsonEncode({'productId': 1, 'imagePath': imageFile.path}),
+        isCritical: true,
+        createdAt: '2025-01-01T10:00:00Z',
+      );
+
+      when(
+        mockStorageRemoteDataSource.uploadProductImage(imageFile.path),
+      ).thenAnswer((_) async => Result.failure(error: 'Upload failed'));
+
+      final result = await repository.executeQueuedAction(queue);
+
+      expect(result.isFailure, true);
+      expect(imageFile.existsSync(), true);
+      verifyNever(mockQueuedActionDatasource.deleteQueuedAction(any));
+
+      await imageFile.delete();
     });
   });
 }

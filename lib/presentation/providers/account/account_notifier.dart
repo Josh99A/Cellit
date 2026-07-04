@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/di/app_providers.dart';
 import '../../../core/common/result.dart';
+import '../../../core/services/image/image_file_service.dart';
+import '../../../core/utilities/console_logger.dart';
 import '../../../domain/entities/user_entity.dart' hide AuthProvider;
+import '../../../domain/usecases/params/image_upload_params.dart';
 import '../../../domain/usecases/storage_usecases.dart';
 import '../../../domain/usecases/user_usecases.dart';
 import '../auth/auth_notifier.dart';
@@ -48,14 +51,24 @@ class AccountNotifier extends AutoDisposeNotifier<AccountFormState> {
   Future<Result<void>> updatedUser() async {
     try {
       final userId = _requireUserId();
+      final pingService = ref.read(pingServiceProvider);
       final storageRepository = ref.read(storageRepositoryProvider);
       final userRepository = ref.read(userRepositoryProvider);
 
       var imageUrl = state.imageUrl;
+      String? queuedImagePath;
 
       if (state.imageFile != null) {
-        final res = await UploadUserPhotoUsecase(storageRepository).call(state.imageFile!.path);
-        imageUrl = res.data;
+        if (pingService.isKnownOffline) {
+          // Persist the photo locally and queue the upload for when connection returns
+          queuedImagePath = await ImageFileService.persistImage(state.imageFile!.path);
+          imageUrl = queuedImagePath;
+        } else {
+          final res = await UploadUserPhotoUsecase(storageRepository).call(state.imageFile!.path);
+          if (res.isFailure) return Result.failure(error: res.error!);
+
+          imageUrl = res.data;
+        }
       }
 
       var user = UserEntity(
@@ -67,6 +80,14 @@ class AccountNotifier extends AutoDisposeNotifier<AccountFormState> {
       );
 
       var res = await UpateUserUsecase(userRepository).call(user);
+
+      if (res.isSuccess && queuedImagePath != null) {
+        final queueRes = await QueueUserPhotoUploadUsecase(storageRepository).call(
+          UserPhotoUploadParams(userId: userId, imagePath: queuedImagePath),
+        );
+
+        if (queueRes.isFailure) cl('Failed to queue user photo upload: ${queueRes.error}');
+      }
 
       return res;
     } catch (e) {

@@ -1,39 +1,42 @@
 import 'package:intl/intl.dart';
 
-import '../locale/app_locale.dart';
+import '../constants/app_currencies.dart';
 
-/// Currency Formatter dependent on [AppLocale]
+/// Currency Formatter dependent on the selected [AppCurrency]
+///
+/// The active currency is managed by CurrencyNotifier and defaults to [AppCurrencies.defaultCurrency]
 class CurrencyFormatter {
   CurrencyFormatter._();
 
-  static const int defaultDecimalDigits = 0;
+  static AppCurrency currency = AppCurrencies.defaultCurrency;
+
+  static String get _symbolPrefix => currency.symbol.length > 1 ? '${currency.symbol} ' : currency.symbol;
 
   static String format(num data, {int? decimalDigits}) {
-    return NumberFormat.simpleCurrency(
-      locale: AppLocale.defaultLocale.countryCode,
-      decimalDigits: decimalDigits ?? defaultDecimalDigits,
+    return NumberFormat.currency(
+      locale: 'en',
+      symbol: _symbolPrefix,
+      decimalDigits: decimalDigits ?? currency.decimalDigits,
     ).format(data);
   }
 
   static String compact(num data, {int? decimalDigits, bool withSymbol = true}) {
-    return NumberFormat.compactSimpleCurrency(
-      locale: AppLocale.defaultLocale.countryCode,
-      name: withSymbol ? null : '',
-      decimalDigits: decimalDigits ?? defaultDecimalDigits,
+    return NumberFormat.compactCurrency(
+      locale: 'en',
+      symbol: withSymbol ? _symbolPrefix : '',
+      decimalDigits: decimalDigits ?? currency.decimalDigits,
     ).format(data);
   }
 
   static String withoutSymbol(num data, {int? decimalDigits}) {
     return NumberFormat.currency(
-      locale: AppLocale.defaultLocale.countryCode,
-      decimalDigits: decimalDigits ?? defaultDecimalDigits,
-      symbol: "",
+      locale: 'en',
+      symbol: '',
+      decimalDigits: decimalDigits ?? currency.decimalDigits,
     ).format(data);
   }
 
   static String currencySymbol() {
-    return NumberFormat.simpleCurrency(
-      locale: AppLocale.defaultLocale.countryCode,
-    ).currencySymbol;
+    return currency.symbol;
   }
 }

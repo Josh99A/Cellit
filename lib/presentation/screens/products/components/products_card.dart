@@ -2,6 +2,7 @@ import 'package:app_image/app_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/themes/app_sizes.dart';
+import '../../../../core/utilities/app_image_utils.dart';
 import '../../../../core/utilities/currency_formatter.dart';
 import '../../../../domain/entities/product_entity.dart';
 
@@ -47,6 +48,7 @@ class ProductsCard extends StatelessWidget {
                       aspectRatio: 1,
                       child: AppImage(
                         image: product.imageUrl,
+                        imgProvider: AppImageUtils.providerFor(product.imageUrl),
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(width: 0.5, color: Theme.of(context).colorScheme.surfaceContainerHighest),
                         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,

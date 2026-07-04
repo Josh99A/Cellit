@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../core/locale/app_locale.dart';
 import '../../core/themes/app_sizes.dart';
+import '../../core/utilities/currency_formatter.dart';
 import 'app_icon_button.dart';
 
 enum AppTextFieldType {
@@ -219,7 +219,7 @@ class _AppTextFieldState extends State<AppTextField> {
       return Padding(
         padding: const EdgeInsets.all(16),
         child: Text(
-          AppLocale.defaultCurrencyCode,
+          CurrencyFormatter.currencySymbol(),
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.bold,

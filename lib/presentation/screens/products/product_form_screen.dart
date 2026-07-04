@@ -9,6 +9,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/themes/app_sizes.dart';
+import '../../../core/utilities/app_image_utils.dart';
 import '../../providers/products/product_form_notifier.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_dialog.dart';
@@ -200,7 +201,7 @@ class _ImageSection extends ConsumerWidget {
               onTap: onTapImage,
               child: AppImage(
                 image: imageFile?.path ?? imageUrl ?? '',
-                imgProvider: imageFile != null ? ImgProvider.fileImage : ImgProvider.networkImage,
+                imgProvider: imageFile != null ? ImgProvider.fileImage : AppImageUtils.providerFor(imageUrl),
                 width: 100,
                 height: 100,
                 borderRadius: BorderRadius.circular(AppSizes.radius),

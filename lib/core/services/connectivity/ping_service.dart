@@ -24,6 +24,15 @@ class PingService {
 
   bool _previousStatus = false;
 
+  /// Whether the ping process has produced any data yet.
+  /// Right after startup [isConnected] is false simply because no ping has completed,
+  /// not because the device is offline.
+  bool get hasPingData => _pingLatencies.isNotEmpty;
+
+  /// True only when there is actual ping data proving the connection is down,
+  /// as opposed to [isConnected] being false during the startup warm-up window.
+  bool get isKnownOffline => hasPingData && !isConnected;
+
   bool get isConnected {
     if (_pingLatencies.isEmpty) {
       return false; // No latencies to check, assume not connected

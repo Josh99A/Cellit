@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../../../core/themes/app_sizes.dart';
+import '../../../core/utilities/app_image_utils.dart';
 import '../../../domain/entities/product_entity.dart';
 import '../../providers/home/home_notifier.dart';
 import '../../providers/main/main_notifier.dart';
@@ -218,6 +219,7 @@ class _Title extends ConsumerWidget {
       children: [
         AppImage(
           image: user?.imageUrl ?? '',
+          imgProvider: AppImageUtils.providerFor(user?.imageUrl),
           borderRadius: BorderRadius.circular(100),
           width: 30,
           height: 30,

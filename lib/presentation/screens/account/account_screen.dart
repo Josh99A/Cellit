@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_currencies.dart';
 import '../../../core/themes/app_sizes.dart';
+import '../../../core/utilities/app_image_utils.dart';
 import '../../providers/auth/auth_notifier.dart';
+import '../../providers/currency/currency_notifier.dart';
 import '../../providers/main/main_notifier.dart';
 import '../../providers/theme/theme_notifier.dart';
 import '../../widgets/app_button.dart';
@@ -25,6 +28,7 @@ class AccountScreen extends StatelessWidget {
             _UserInfo(),
             _ProfileButton(),
             _ThemeButton(),
+            _CurrencyButton(),
             _PrinterSettingsButton(),
             _AboutButton(),
             _SignOutButton(),
@@ -48,6 +52,7 @@ class _UserInfo extends ConsumerWidget {
         children: [
           AppImage(
             image: user?.imageUrl ?? '',
+            imgProvider: AppImageUtils.providerFor(user?.imageUrl),
             width: 120,
             height: 120,
             borderRadius: BorderRadius.circular(100),
@@ -154,6 +159,123 @@ class _ThemeButton extends StatelessWidget {
             child: const _ThemeDialogBody(),
           );
         },
+      ),
+    );
+  }
+}
+
+class _CurrencyButton extends ConsumerWidget {
+  const _CurrencyButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currency = ref.watch(currencyNotifierProvider.select((s) => s.currency));
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSizes.padding),
+      child: AppButton(
+        buttonColor: Theme.of(context).colorScheme.surface,
+        borderColor: Theme.of(context).colorScheme.surfaceContainer,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  Icons.payments_outlined,
+                  size: 18,
+                ),
+                const SizedBox(width: AppSizes.padding / 1.5),
+                Text(
+                  'Currency',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text(
+                  currency.code,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: AppSizes.padding / 1.5),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 18,
+                ),
+              ],
+            ),
+          ],
+        ),
+        onTap: () {
+          AppDialog.show(
+            title: 'Currency',
+            leftButtonText: 'Close',
+            child: const _CurrencyDialogBody(),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _CurrencyDialogBody extends ConsumerWidget {
+  const _CurrencyDialogBody();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selected = ref.watch(currencyNotifierProvider.select((s) => s.currency));
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: AppSizes.screenHeight(context) / 2),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: AppCurrencies.all.map((currency) {
+            final isSelected = currency == selected;
+
+            return InkWell(
+              borderRadius: BorderRadius.circular(AppSizes.radius),
+              onTap: () {
+                ref.read(currencyNotifierProvider.notifier).changeCurrency(currency);
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSizes.padding / 1.5),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 42,
+                      child: Text(
+                        currency.symbol,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        '${currency.name} (${currency.code})',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                    if (isSelected)
+                      Icon(
+                        Icons.check_circle,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

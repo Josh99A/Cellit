@@ -5,9 +5,8 @@ class AppLocale {
   // Prevents instantiation and extension
   AppLocale._();
 
-  static Locale defaultLocale = const Locale('id', 'ID');
-  static String defaultPhoneCode = '+62';
-  static String defaultCurrencyCode = 'Rp';
+  static Locale defaultLocale = const Locale('en', 'EN');
+  static String defaultPhoneCode = '+256';
 
   static const List<Locale> supportedLocales = [
     Locale('id', 'ID'),

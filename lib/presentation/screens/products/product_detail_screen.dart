@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/themes/app_sizes.dart';
+import '../../../core/utilities/app_image_utils.dart';
 import '../../../core/utilities/currency_formatter.dart';
 import '../../../core/utilities/date_time_formatter.dart';
 import '../../providers/products/product_detail_notifier.dart';
@@ -130,6 +131,7 @@ class _ProductImage extends StatelessWidget {
       ),
       child: AppImage(
         image: imageUrl ?? '',
+        imgProvider: AppImageUtils.providerFor(imageUrl),
         backgroundColor: Theme.of(context).colorScheme.surface,
         border: Border.all(
           width: 0.5,
