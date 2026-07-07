@@ -6,7 +6,8 @@
 import 'dart:async' as _i6;
 
 import 'package:cellit/core/common/result.dart' as _i7;
-import 'package:cellit/data/datasources/remote/auth_remote_datasource_impl.dart' as _i5;
+import 'package:cellit/data/datasources/remote/auth_remote_datasource_impl.dart'
+    as _i5;
 import 'package:cellit/data/models/user_model.dart' as _i8;
 import 'package:cellit/domain/entities/user_entity.dart' as _i4;
 import 'package:firebase_auth/firebase_auth.dart' as _i2;
@@ -29,21 +30,25 @@ import 'package:mockito/src/dummies.dart' as _i9;
 // ignore_for_file: subtype_of_sealed_class
 
 class _FakeFirebaseAuth_0 extends _i1.SmartFake implements _i2.FirebaseAuth {
-  _FakeFirebaseAuth_0(Object parent, Invocation parentInvocation) : super(parent, parentInvocation);
+  _FakeFirebaseAuth_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 class _FakeGoogleSignIn_1 extends _i1.SmartFake implements _i3.GoogleSignIn {
-  _FakeGoogleSignIn_1(Object parent, Invocation parentInvocation) : super(parent, parentInvocation);
+  _FakeGoogleSignIn_1(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 class _FakeUserEntity_2 extends _i1.SmartFake implements _i4.UserEntity {
-  _FakeUserEntity_2(Object parent, Invocation parentInvocation) : super(parent, parentInvocation);
+  _FakeUserEntity_2(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [AuthRemoteDataSourceImpl].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthRemoteDataSourceImpl extends _i1.Mock implements _i5.AuthRemoteDataSourceImpl {
+class MockAuthRemoteDataSourceImpl extends _i1.Mock
+    implements _i5.AuthRemoteDataSourceImpl {
   MockAuthRemoteDataSourceImpl() {
     _i1.throwOnMissingStub(this);
   }
@@ -223,7 +228,9 @@ class MockUserEntity extends _i1.Mock implements _i4.UserEntity {
           as String);
 
   @override
-  List<Object?> get props => (super.noSuchMethod(Invocation.getter(#props), returnValue: <Object?>[]) as List<Object?>);
+  List<Object?> get props =>
+      (super.noSuchMethod(Invocation.getter(#props), returnValue: <Object?>[])
+          as List<Object?>);
 
   @override
   _i4.UserEntity copyWith({

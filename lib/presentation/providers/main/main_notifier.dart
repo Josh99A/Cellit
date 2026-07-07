@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/di/app_providers.dart';
 import '../../../domain/entities/queued_action_entity.dart';
 import '../../../domain/entities/user_entity.dart' hide AuthProvider;
+import '../../../domain/usecases/expense_usecases.dart';
 import '../../../domain/usecases/params/no_param.dart';
 import '../../../domain/usecases/product_usecases.dart';
 import '../../../domain/usecases/queued_action_usecases.dart';
@@ -81,12 +82,14 @@ class MainNotifier extends Notifier<MainState> {
     final userRepository = ref.read(userRepositoryProvider);
     final productRepository = ref.read(productRepositoryProvider);
     final transactionRepository = ref.read(transactionRepositoryProvider);
+    final expenseRepository = ref.read(expenseRepositoryProvider);
 
     // Run multiple futures simultaneously
     var res = await Future.wait([
       GetUserUsecase(userRepository).call(userId),
       SyncAllUserProductsUsecase(productRepository).call(userId),
       SyncAllUserTransactionsUsecase(transactionRepository).call(userId),
+      SyncAllUserExpensesUsecase(expenseRepository).call(userId),
     ]);
 
     // Set and notify user state
@@ -96,6 +99,7 @@ class MainNotifier extends Notifier<MainState> {
 
     if (res[1].isFailure) AppSnackBar.showError("Failed to sync product data");
     if (res[2].isFailure) AppSnackBar.showError("Failed to sync transaction data");
+    if (res[3].isFailure) AppSnackBar.showError("Failed to sync expense data");
 
     // Refresh products list
     ref.read(productsNotifierProvider.notifier).getAllProducts();

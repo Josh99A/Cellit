@@ -10,10 +10,12 @@ import '../../domain/repositories/queued_action_repository.dart';
 import '../datasources/local/product_local_datasource_impl.dart';
 import '../datasources/local/queued_action_local_datasource_impl.dart';
 import '../datasources/local/user_local_datasource_impl.dart';
+import '../datasources/remote/expense_remote_datasource_impl.dart';
 import '../datasources/remote/product_remote_datasource_impl.dart';
 import '../datasources/remote/storage_remote_datasource_impl.dart';
 import '../datasources/remote/transaction_remote_datasource_impl.dart';
 import '../datasources/remote/user_remote_datasource_impl.dart';
+import '../models/expense_model.dart';
 import '../models/product_model.dart';
 import '../models/queued_action_model.dart';
 import '../models/transaction_model.dart';
@@ -25,6 +27,7 @@ class QueuedActionRepositoryImpl extends QueuedActionRepository {
   final UserRemoteDatasourceImpl userRemoteDatasource;
   final TransactionRemoteDatasourceImpl transactionRemoteDatasource;
   final ProductRemoteDatasourceImpl productRemoteDatasource;
+  final ExpenseRemoteDatasourceImpl expenseRemoteDatasource;
   final StorageRemoteDataSourceImpl storageRemoteDataSource;
   final ProductLocalDatasourceImpl productLocalDatasource;
   final UserLocalDatasourceImpl userLocalDatasource;
@@ -35,6 +38,7 @@ class QueuedActionRepositoryImpl extends QueuedActionRepository {
     required this.userRemoteDatasource,
     required this.transactionRemoteDatasource,
     required this.productRemoteDatasource,
+    required this.expenseRemoteDatasource,
     required this.storageRemoteDataSource,
     required this.productLocalDatasource,
     required this.userLocalDatasource,
@@ -178,6 +182,35 @@ class QueuedActionRepositoryImpl extends QueuedActionRepository {
           ProductModel param = ProductModel.fromJson(jsonDecode(queue.param));
 
           final res = await productRemoteDatasource.updateProduct(param);
+          if (res.isFailure) return Result.failure(error: res.error!);
+
+          return Result.success(data: null);
+        }
+      }
+
+      if (queue.repository == 'ExpenseRepositoryImpl') {
+        if (queue.method == 'createExpense') {
+          ExpenseModel param = ExpenseModel.fromJson(jsonDecode(queue.param));
+
+          final res = await expenseRemoteDatasource.createExpense(param);
+          if (res.isFailure) return Result.failure(error: res.error!);
+
+          return Result.success(data: null);
+        }
+
+        if (queue.method == 'deleteExpense') {
+          final param = int.parse(queue.param);
+
+          final res = await expenseRemoteDatasource.deleteExpense(param);
+          if (res.isFailure) return Result.failure(error: res.error!);
+
+          return Result.success(data: null);
+        }
+
+        if (queue.method == 'updateExpense') {
+          ExpenseModel param = ExpenseModel.fromJson(jsonDecode(queue.param));
+
+          final res = await expenseRemoteDatasource.updateExpense(param);
           if (res.isFailure) return Result.failure(error: res.error!);
 
           return Result.success(data: null);

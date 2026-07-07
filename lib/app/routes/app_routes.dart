@@ -7,6 +7,7 @@ import '../../presentation/screens/account/about_screen.dart';
 import '../../presentation/screens/account/account_screen.dart';
 import '../../presentation/screens/account/printer_settings_screen.dart';
 import '../../presentation/screens/account/profile_form_screen.dart';
+import '../../presentation/screens/account/tax_settings_screen.dart';
 import '../../presentation/screens/auth/sign_in/sign_in_screen.dart';
 import '../../presentation/screens/error/error_screen.dart';
 import '../../presentation/screens/home/home_screen.dart';
@@ -14,6 +15,8 @@ import '../../presentation/screens/main/main_screen.dart';
 import '../../presentation/screens/products/product_detail_screen.dart';
 import '../../presentation/screens/products/product_form_screen.dart';
 import '../../presentation/screens/products/products_screen.dart';
+import '../../presentation/screens/reports/expense_form_screen.dart';
+import '../../presentation/screens/reports/reports_screen.dart';
 import '../../presentation/screens/transactions/transaction_detail_screen.dart';
 import '../../presentation/screens/transactions/transactions_screen.dart';
 import '../../presentation/screens/welcome/welcome_screen.dart';
@@ -120,6 +123,7 @@ class AppRoutes {
         _home(),
         _products(),
         _transactions(),
+        _reports(),
         _account(),
       ],
     );
@@ -166,6 +170,46 @@ class AppRoutes {
     );
   }
 
+  GoRoute _reports() {
+    return GoRoute(
+      path: '/reports',
+      pageBuilder: (context, state) {
+        return const NoTransitionPage<void>(
+          child: ReportsScreen(),
+        );
+      },
+      routes: [
+        _expenseCreate(),
+        _expenseEdit(),
+      ],
+    );
+  }
+
+  GoRoute _expenseCreate() {
+    return GoRoute(
+      path: 'expense-create',
+      parentNavigatorKey: navNavigatorKey,
+      builder: (context, state) {
+        return const ExpenseFormScreen();
+      },
+    );
+  }
+
+  GoRoute _expenseEdit() {
+    return GoRoute(
+      path: 'expense-edit/:id',
+      builder: (context, state) {
+        int? id = int.tryParse(state.pathParameters["id"] ?? '');
+
+        if (id == null) {
+          throw 'Required expenseId is not provided!';
+        }
+
+        return ExpenseFormScreen(id: id);
+      },
+    );
+  }
+
   GoRoute _account() {
     return GoRoute(
       path: '/account',
@@ -178,6 +222,7 @@ class AppRoutes {
         _profileEdit(),
         _about(),
         _printerSettings(),
+        _taxSettings(),
       ],
     );
   }
@@ -260,6 +305,15 @@ class AppRoutes {
       path: 'printer-settings',
       builder: (context, state) {
         return const PrinterSettingsScreen();
+      },
+    );
+  }
+
+  GoRoute _taxSettings() {
+    return GoRoute(
+      path: 'tax-settings',
+      builder: (context, state) {
+        return const TaxSettingsScreen();
       },
     );
   }

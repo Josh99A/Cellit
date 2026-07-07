@@ -7,13 +7,23 @@ import 'dart:async' as _i3;
 
 import 'package:cellit/core/common/result.dart' as _i5;
 import 'package:cellit/core/services/connectivity/ping_service.dart' as _i2;
-import 'package:cellit/data/datasources/local/product_local_datasource_impl.dart' as _i15;
-import 'package:cellit/data/datasources/local/queued_action_local_datasource_impl.dart' as _i4;
-import 'package:cellit/data/datasources/local/user_local_datasource_impl.dart' as _i16;
-import 'package:cellit/data/datasources/remote/product_remote_datasource_impl.dart' as _i12;
-import 'package:cellit/data/datasources/remote/storage_remote_datasource_impl.dart' as _i14;
-import 'package:cellit/data/datasources/remote/transaction_remote_datasource_impl.dart' as _i10;
-import 'package:cellit/data/datasources/remote/user_remote_datasource_impl.dart' as _i8;
+import 'package:cellit/data/datasources/local/product_local_datasource_impl.dart'
+    as _i17;
+import 'package:cellit/data/datasources/local/queued_action_local_datasource_impl.dart'
+    as _i4;
+import 'package:cellit/data/datasources/local/user_local_datasource_impl.dart'
+    as _i18;
+import 'package:cellit/data/datasources/remote/expense_remote_datasource_impl.dart'
+    as _i14;
+import 'package:cellit/data/datasources/remote/product_remote_datasource_impl.dart'
+    as _i12;
+import 'package:cellit/data/datasources/remote/storage_remote_datasource_impl.dart'
+    as _i16;
+import 'package:cellit/data/datasources/remote/transaction_remote_datasource_impl.dart'
+    as _i10;
+import 'package:cellit/data/datasources/remote/user_remote_datasource_impl.dart'
+    as _i8;
+import 'package:cellit/data/models/expense_model.dart' as _i15;
 import 'package:cellit/data/models/product_model.dart' as _i13;
 import 'package:cellit/data/models/queued_action_model.dart' as _i6;
 import 'package:cellit/data/models/transaction_model.dart' as _i11;
@@ -36,7 +46,8 @@ import 'package:mockito/src/dummies.dart' as _i7;
 // ignore_for_file: subtype_of_sealed_class
 
 class _FakePingData_0 extends _i1.SmartFake implements _i2.PingData {
-  _FakePingData_0(Object parent, Invocation parentInvocation) : super(parent, parentInvocation);
+  _FakePingData_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [PingService].
@@ -48,7 +59,9 @@ class MockPingService extends _i1.Mock implements _i2.PingService {
   }
 
   @override
-  bool get hasPingData => (super.noSuchMethod(Invocation.getter(#hasPingData), returnValue: false) as bool);
+  bool get hasPingData =>
+      (super.noSuchMethod(Invocation.getter(#hasPingData), returnValue: false)
+          as bool);
 
   @override
   bool get isKnownOffline =>
@@ -59,7 +72,9 @@ class MockPingService extends _i1.Mock implements _i2.PingService {
           as bool);
 
   @override
-  bool get isConnected => (super.noSuchMethod(Invocation.getter(#isConnected), returnValue: false) as bool);
+  bool get isConnected =>
+      (super.noSuchMethod(Invocation.getter(#isConnected), returnValue: false)
+          as bool);
 
   @override
   _i3.Future<void> startPing({
@@ -85,16 +100,18 @@ class MockPingService extends _i1.Mock implements _i2.PingService {
           as _i3.Future<void>);
 
   @override
-  void addListener(dynamic Function(List<int>, List<String>)? listener) => super.noSuchMethod(
-    Invocation.method(#addListener, [listener]),
-    returnValueForMissingStub: null,
-  );
+  void addListener(dynamic Function(List<int>, List<String>)? listener) =>
+      super.noSuchMethod(
+        Invocation.method(#addListener, [listener]),
+        returnValueForMissingStub: null,
+      );
 
   @override
-  void removeListener(dynamic Function(List<int>, List<String>)? listener) => super.noSuchMethod(
-    Invocation.method(#removeListener, [listener]),
-    returnValueForMissingStub: null,
-  );
+  void removeListener(dynamic Function(List<int>, List<String>)? listener) =>
+      super.noSuchMethod(
+        Invocation.method(#removeListener, [listener]),
+        returnValueForMissingStub: null,
+      );
 
   @override
   void clearListeners() => super.noSuchMethod(
@@ -103,16 +120,18 @@ class MockPingService extends _i1.Mock implements _i2.PingService {
   );
 
   @override
-  void addConnectionStatusListener(dynamic Function(bool)? listener) => super.noSuchMethod(
-    Invocation.method(#addConnectionStatusListener, [listener]),
-    returnValueForMissingStub: null,
-  );
+  void addConnectionStatusListener(dynamic Function(bool)? listener) =>
+      super.noSuchMethod(
+        Invocation.method(#addConnectionStatusListener, [listener]),
+        returnValueForMissingStub: null,
+      );
 
   @override
-  void removeConnectionStatusListener(dynamic Function(bool)? listener) => super.noSuchMethod(
-    Invocation.method(#removeConnectionStatusListener, [listener]),
-    returnValueForMissingStub: null,
-  );
+  void removeConnectionStatusListener(dynamic Function(bool)? listener) =>
+      super.noSuchMethod(
+        Invocation.method(#removeConnectionStatusListener, [listener]),
+        returnValueForMissingStub: null,
+      );
 
   @override
   void clearConnectionStatusListeners() => super.noSuchMethod(
@@ -147,7 +166,8 @@ class MockPingService extends _i1.Mock implements _i2.PingService {
 /// A class which mocks [QueuedActionLocalDatasourceImpl].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockQueuedActionLocalDatasourceImpl extends _i1.Mock implements _i4.QueuedActionLocalDatasourceImpl {
+class MockQueuedActionLocalDatasourceImpl extends _i1.Mock
+    implements _i4.QueuedActionLocalDatasourceImpl {
   MockQueuedActionLocalDatasourceImpl() {
     _i1.throwOnMissingStub(this);
   }
@@ -194,15 +214,17 @@ class MockQueuedActionLocalDatasourceImpl extends _i1.Mock implements _i4.Queued
           as _i3.Future<_i5.Result<_i6.QueuedActionModel?>>);
 
   @override
-  _i3.Future<_i5.Result<List<_i6.QueuedActionModel>>> getAllUserQueuedAction() =>
+  _i3.Future<_i5.Result<List<_i6.QueuedActionModel>>>
+  getAllUserQueuedAction() =>
       (super.noSuchMethod(
             Invocation.method(#getAllUserQueuedAction, []),
-            returnValue: _i3.Future<_i5.Result<List<_i6.QueuedActionModel>>>.value(
-              _i7.dummyValue<_i5.Result<List<_i6.QueuedActionModel>>>(
-                this,
-                Invocation.method(#getAllUserQueuedAction, []),
-              ),
-            ),
+            returnValue:
+                _i3.Future<_i5.Result<List<_i6.QueuedActionModel>>>.value(
+                  _i7.dummyValue<_i5.Result<List<_i6.QueuedActionModel>>>(
+                    this,
+                    Invocation.method(#getAllUserQueuedAction, []),
+                  ),
+                ),
           )
           as _i3.Future<_i5.Result<List<_i6.QueuedActionModel>>>);
 }
@@ -210,7 +232,8 @@ class MockQueuedActionLocalDatasourceImpl extends _i1.Mock implements _i4.Queued
 /// A class which mocks [UserRemoteDatasourceImpl].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUserRemoteDatasourceImpl extends _i1.Mock implements _i8.UserRemoteDatasourceImpl {
+class MockUserRemoteDatasourceImpl extends _i1.Mock
+    implements _i8.UserRemoteDatasourceImpl {
   MockUserRemoteDatasourceImpl() {
     _i1.throwOnMissingStub(this);
   }
@@ -271,7 +294,8 @@ class MockUserRemoteDatasourceImpl extends _i1.Mock implements _i8.UserRemoteDat
 /// A class which mocks [TransactionRemoteDatasourceImpl].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTransactionRemoteDatasourceImpl extends _i1.Mock implements _i10.TransactionRemoteDatasourceImpl {
+class MockTransactionRemoteDatasourceImpl extends _i1.Mock
+    implements _i10.TransactionRemoteDatasourceImpl {
   MockTransactionRemoteDatasourceImpl() {
     _i1.throwOnMissingStub(this);
   }
@@ -338,12 +362,13 @@ class MockTransactionRemoteDatasourceImpl extends _i1.Mock implements _i10.Trans
   ) =>
       (super.noSuchMethod(
             Invocation.method(#getAllUserTransactions, [userId]),
-            returnValue: _i3.Future<_i5.Result<List<_i11.TransactionModel>>>.value(
-              _i7.dummyValue<_i5.Result<List<_i11.TransactionModel>>>(
-                this,
-                Invocation.method(#getAllUserTransactions, [userId]),
-              ),
-            ),
+            returnValue:
+                _i3.Future<_i5.Result<List<_i11.TransactionModel>>>.value(
+                  _i7.dummyValue<_i5.Result<List<_i11.TransactionModel>>>(
+                    this,
+                    Invocation.method(#getAllUserTransactions, [userId]),
+                  ),
+                ),
           )
           as _i3.Future<_i5.Result<List<_i11.TransactionModel>>>);
 
@@ -368,22 +393,23 @@ class MockTransactionRemoteDatasourceImpl extends _i1.Mock implements _i10.Trans
                 #contains: contains,
               },
             ),
-            returnValue: _i3.Future<_i5.Result<List<_i11.TransactionModel>>>.value(
-              _i7.dummyValue<_i5.Result<List<_i11.TransactionModel>>>(
-                this,
-                Invocation.method(
-                  #getUserTransactions,
-                  [userId],
-                  {
-                    #orderBy: orderBy,
-                    #sortBy: sortBy,
-                    #limit: limit,
-                    #offset: offset,
-                    #contains: contains,
-                  },
+            returnValue:
+                _i3.Future<_i5.Result<List<_i11.TransactionModel>>>.value(
+                  _i7.dummyValue<_i5.Result<List<_i11.TransactionModel>>>(
+                    this,
+                    Invocation.method(
+                      #getUserTransactions,
+                      [userId],
+                      {
+                        #orderBy: orderBy,
+                        #sortBy: sortBy,
+                        #limit: limit,
+                        #offset: offset,
+                        #contains: contains,
+                      },
+                    ),
+                  ),
                 ),
-              ),
-            ),
           )
           as _i3.Future<_i5.Result<List<_i11.TransactionModel>>>);
 }
@@ -391,7 +417,8 @@ class MockTransactionRemoteDatasourceImpl extends _i1.Mock implements _i10.Trans
 /// A class which mocks [ProductRemoteDatasourceImpl].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockProductRemoteDatasourceImpl extends _i1.Mock implements _i12.ProductRemoteDatasourceImpl {
+class MockProductRemoteDatasourceImpl extends _i1.Mock
+    implements _i12.ProductRemoteDatasourceImpl {
   MockProductRemoteDatasourceImpl() {
     _i1.throwOnMissingStub(this);
   }
@@ -504,10 +531,128 @@ class MockProductRemoteDatasourceImpl extends _i1.Mock implements _i12.ProductRe
           as _i3.Future<_i5.Result<List<_i13.ProductModel>>>);
 }
 
+/// A class which mocks [ExpenseRemoteDatasourceImpl].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockExpenseRemoteDatasourceImpl extends _i1.Mock
+    implements _i14.ExpenseRemoteDatasourceImpl {
+  MockExpenseRemoteDatasourceImpl() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i3.Future<_i5.Result<int>> createExpense(_i15.ExpenseModel? expense) =>
+      (super.noSuchMethod(
+            Invocation.method(#createExpense, [expense]),
+            returnValue: _i3.Future<_i5.Result<int>>.value(
+              _i7.dummyValue<_i5.Result<int>>(
+                this,
+                Invocation.method(#createExpense, [expense]),
+              ),
+            ),
+          )
+          as _i3.Future<_i5.Result<int>>);
+
+  @override
+  _i3.Future<_i5.Result<void>> updateExpense(_i15.ExpenseModel? expense) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateExpense, [expense]),
+            returnValue: _i3.Future<_i5.Result<void>>.value(
+              _i7.dummyValue<_i5.Result<void>>(
+                this,
+                Invocation.method(#updateExpense, [expense]),
+              ),
+            ),
+          )
+          as _i3.Future<_i5.Result<void>>);
+
+  @override
+  _i3.Future<_i5.Result<void>> deleteExpense(int? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteExpense, [id]),
+            returnValue: _i3.Future<_i5.Result<void>>.value(
+              _i7.dummyValue<_i5.Result<void>>(
+                this,
+                Invocation.method(#deleteExpense, [id]),
+              ),
+            ),
+          )
+          as _i3.Future<_i5.Result<void>>);
+
+  @override
+  _i3.Future<_i5.Result<_i15.ExpenseModel?>> getExpense(int? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#getExpense, [id]),
+            returnValue: _i3.Future<_i5.Result<_i15.ExpenseModel?>>.value(
+              _i7.dummyValue<_i5.Result<_i15.ExpenseModel?>>(
+                this,
+                Invocation.method(#getExpense, [id]),
+              ),
+            ),
+          )
+          as _i3.Future<_i5.Result<_i15.ExpenseModel?>>);
+
+  @override
+  _i3.Future<_i5.Result<List<_i15.ExpenseModel>>> getAllUserExpenses(
+    String? userId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getAllUserExpenses, [userId]),
+            returnValue: _i3.Future<_i5.Result<List<_i15.ExpenseModel>>>.value(
+              _i7.dummyValue<_i5.Result<List<_i15.ExpenseModel>>>(
+                this,
+                Invocation.method(#getAllUserExpenses, [userId]),
+              ),
+            ),
+          )
+          as _i3.Future<_i5.Result<List<_i15.ExpenseModel>>>);
+
+  @override
+  _i3.Future<_i5.Result<List<_i15.ExpenseModel>>> getUserExpenses(
+    String? userId, {
+    String? orderBy = 'date',
+    String? sortBy = 'DESC',
+    int? limit = 10,
+    int? offset,
+    String? contains,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #getUserExpenses,
+              [userId],
+              {
+                #orderBy: orderBy,
+                #sortBy: sortBy,
+                #limit: limit,
+                #offset: offset,
+                #contains: contains,
+              },
+            ),
+            returnValue: _i3.Future<_i5.Result<List<_i15.ExpenseModel>>>.value(
+              _i7.dummyValue<_i5.Result<List<_i15.ExpenseModel>>>(
+                this,
+                Invocation.method(
+                  #getUserExpenses,
+                  [userId],
+                  {
+                    #orderBy: orderBy,
+                    #sortBy: sortBy,
+                    #limit: limit,
+                    #offset: offset,
+                    #contains: contains,
+                  },
+                ),
+              ),
+            ),
+          )
+          as _i3.Future<_i5.Result<List<_i15.ExpenseModel>>>);
+}
+
 /// A class which mocks [StorageRemoteDataSourceImpl].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockStorageRemoteDataSourceImpl extends _i1.Mock implements _i14.StorageRemoteDataSourceImpl {
+class MockStorageRemoteDataSourceImpl extends _i1.Mock
+    implements _i16.StorageRemoteDataSourceImpl {
   MockStorageRemoteDataSourceImpl() {
     _i1.throwOnMissingStub(this);
   }
@@ -542,7 +687,8 @@ class MockStorageRemoteDataSourceImpl extends _i1.Mock implements _i14.StorageRe
 /// A class which mocks [ProductLocalDatasourceImpl].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockProductLocalDatasourceImpl extends _i1.Mock implements _i15.ProductLocalDatasourceImpl {
+class MockProductLocalDatasourceImpl extends _i1.Mock
+    implements _i17.ProductLocalDatasourceImpl {
   MockProductLocalDatasourceImpl() {
     _i1.throwOnMissingStub(this);
   }
@@ -658,7 +804,8 @@ class MockProductLocalDatasourceImpl extends _i1.Mock implements _i15.ProductLoc
 /// A class which mocks [UserLocalDatasourceImpl].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUserLocalDatasourceImpl extends _i1.Mock implements _i16.UserLocalDatasourceImpl {
+class MockUserLocalDatasourceImpl extends _i1.Mock
+    implements _i18.UserLocalDatasourceImpl {
   MockUserLocalDatasourceImpl() {
     _i1.throwOnMissingStub(this);
   }

@@ -46,6 +46,7 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
         imageUrl: product?.imageUrl,
         name: product?.name,
         price: product?.price,
+        costPrice: product?.costPrice,
         stock: product?.stock,
         description: product?.description,
         isLoaded: true,
@@ -86,6 +87,7 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
         imageUrl: imageUrl ?? '',
         stock: state.stock ?? 0,
         price: state.price ?? 0,
+        costPrice: state.costPrice,
         description: state.description ?? '',
       );
 
@@ -140,6 +142,7 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
         imageUrl: imageUrl ?? '',
         stock: state.stock ?? 0,
         price: state.price ?? 0,
+        costPrice: state.costPrice,
         description: state.description ?? '',
       );
 
@@ -186,6 +189,10 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
 
   void onChangedPrice(String value) {
     state = state.copyWith(price: int.tryParse(value));
+  }
+
+  void onChangedCostPrice(String value) {
+    state = state.copyWith(costPrice: int.tryParse(value));
   }
 
   void onChangedStock(String value) {

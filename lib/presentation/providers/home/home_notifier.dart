@@ -8,6 +8,7 @@ import '../../../domain/entities/transaction_entity.dart';
 import '../../../domain/usecases/transaction_usecases.dart';
 import '../auth/auth_notifier.dart';
 import '../products/products_notifier.dart';
+import '../tax/tax_notifier.dart';
 import 'home_state.dart';
 
 final homeNotifierProvider = NotifierProvider.autoDispose<HomeNotifier, HomeState>(
@@ -36,6 +37,9 @@ class HomeNotifier extends AutoDisposeNotifier<HomeState> {
         createdBy: user,
         receivedAmount: state.receivedAmount,
         returnAmount: state.receivedAmount - getTotalAmount(),
+        subtotal: getSubtotalAmount(),
+        taxRate: getTaxRate(),
+        taxAmount: getTaxAmount(),
         totalOrderedProduct: state.orderedProducts.length,
         totalAmount: getTotalAmount(),
       );
@@ -76,6 +80,7 @@ class HomeNotifier extends AutoDisposeNotifier<HomeState> {
         name: product.name,
         imageUrl: product.imageUrl,
         price: product.price,
+        costPrice: product.costPrice,
       );
 
       orderedProducts.add(order);
@@ -116,8 +121,20 @@ class HomeNotifier extends AutoDisposeNotifier<HomeState> {
     state = state.copyWith(description: value);
   }
 
-  int getTotalAmount() {
+  int getSubtotalAmount() {
     if (state.orderedProducts.isEmpty) return 0;
     return state.orderedProducts.map((e) => e.price * e.quantity).reduce((a, b) => a + b);
+  }
+
+  double getTaxRate() {
+    return ref.read(taxNotifierProvider).taxRate;
+  }
+
+  int getTaxAmount() {
+    return (getSubtotalAmount() * getTaxRate() / 100).round();
+  }
+
+  int getTotalAmount() {
+    return getSubtotalAmount() + getTaxAmount();
   }
 }

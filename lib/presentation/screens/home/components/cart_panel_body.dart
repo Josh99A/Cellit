@@ -86,6 +86,8 @@ class _OrderTotal extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final homeState = ref.watch(homeNotifierProvider);
+    final homeNotifier = ref.read(homeNotifierProvider.notifier);
+    final taxRate = homeNotifier.getTaxRate();
 
     return Container(
       padding: const EdgeInsets.all(AppSizes.padding),
@@ -97,20 +99,58 @@ class _OrderTotal extends ConsumerWidget {
           ),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          Text(
-            'Total (${homeState.orderedProducts.length})',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+          if (taxRate > 0) ...[
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSizes.padding / 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Subtotal',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Text(
+                    CurrencyFormatter.format(homeNotifier.getSubtotalAmount()),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
             ),
-          ),
-          Text(
-            CurrencyFormatter.format(ref.read(homeNotifierProvider.notifier).getTotalAmount()),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSizes.padding / 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Tax ($taxRate%)',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Text(
+                    CurrencyFormatter.format(homeNotifier.getTaxAmount()),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
             ),
+          ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Total (${homeState.orderedProducts.length})',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                CurrencyFormatter.format(homeNotifier.getTotalAmount()),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
         ],
       ),

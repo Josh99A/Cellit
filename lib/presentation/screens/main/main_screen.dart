@@ -62,6 +62,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             label: 'Transactions',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart_rounded),
+            label: 'Reports',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_outlined),
             label: 'Account',
           ),
@@ -87,8 +91,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       return 2;
     }
 
-    if (location.startsWith('/account')) {
+    if (location.startsWith('/reports')) {
       return 3;
+    }
+
+    if (location.startsWith('/account')) {
+      return 4;
     }
 
     return 0;
@@ -105,6 +113,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       case 2:
         router.go('/transactions');
       case 3:
+        router.go('/reports');
+      case 4:
         router.go('/account');
     }
   }

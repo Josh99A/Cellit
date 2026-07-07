@@ -12,22 +12,26 @@ import '../../core/services/database/database_service.dart';
 import '../../core/services/info/device_info_service.dart';
 import '../../core/services/logger/error_logger_service.dart';
 import '../../core/services/printer/printer_service.dart';
+import '../../data/datasources/local/expense_local_datasource_impl.dart';
 import '../../data/datasources/local/product_local_datasource_impl.dart';
 import '../../data/datasources/local/queued_action_local_datasource_impl.dart';
 import '../../data/datasources/local/transaction_local_datasource_impl.dart';
 import '../../data/datasources/local/user_local_datasource_impl.dart';
 import '../../data/datasources/remote/auth_remote_datasource_impl.dart';
+import '../../data/datasources/remote/expense_remote_datasource_impl.dart';
 import '../../data/datasources/remote/product_remote_datasource_impl.dart';
 import '../../data/datasources/remote/storage_remote_datasource_impl.dart';
 import '../../data/datasources/remote/transaction_remote_datasource_impl.dart';
 import '../../data/datasources/remote/user_remote_datasource_impl.dart';
 import '../../data/repositories/auth_repository_impl.dart';
+import '../../data/repositories/expense_repository_impl.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../data/repositories/queued_action_repository_impl.dart';
 import '../../data/repositories/storage_repository_impl.dart';
 import '../../data/repositories/transaction_repository_impl.dart';
 import '../../data/repositories/user_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../domain/repositories/expense_repository.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../domain/repositories/queued_action_repository.dart';
 import '../../domain/repositories/storage_repository.dart';
@@ -78,6 +82,9 @@ final userLocalDatasourceProvider = Provider<UserLocalDatasourceImpl>(
 final queuedActionLocalDatasourceProvider = Provider<QueuedActionLocalDatasourceImpl>(
   (ref) => QueuedActionLocalDatasourceImpl(ref.watch(databaseServiceProvider)),
 );
+final expenseLocalDatasourceProvider = Provider<ExpenseLocalDatasourceImpl>(
+  (ref) => ExpenseLocalDatasourceImpl(ref.watch(databaseServiceProvider)),
+);
 
 // Remote Datasources
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSourceImpl>(
@@ -97,6 +104,9 @@ final transactionRemoteDatasourceProvider = Provider<TransactionRemoteDatasource
 );
 final userRemoteDatasourceProvider = Provider<UserRemoteDatasourceImpl>(
   (ref) => UserRemoteDatasourceImpl(ref.watch(firebaseFirestoreProvider)),
+);
+final expenseRemoteDatasourceProvider = Provider<ExpenseRemoteDatasourceImpl>(
+  (ref) => ExpenseRemoteDatasourceImpl(ref.watch(firebaseFirestoreProvider)),
 );
 
 // Repositories
@@ -136,6 +146,14 @@ final userRepositoryProvider = Provider<UserRepository>(
     queuedActionLocalDatasource: ref.watch(queuedActionLocalDatasourceProvider),
   ),
 );
+final expenseRepositoryProvider = Provider<ExpenseRepository>(
+  (ref) => ExpenseRepositoryImpl(
+    pingService: ref.watch(pingServiceProvider),
+    expenseLocalDatasource: ref.watch(expenseLocalDatasourceProvider),
+    expenseRemoteDatasource: ref.watch(expenseRemoteDatasourceProvider),
+    queuedActionLocalDatasource: ref.watch(queuedActionLocalDatasourceProvider),
+  ),
+);
 final queuedActionRepositoryProvider = Provider<QueuedActionRepository>(
   (ref) => QueuedActionRepositoryImpl(
     pingService: ref.watch(pingServiceProvider),
@@ -143,6 +161,7 @@ final queuedActionRepositoryProvider = Provider<QueuedActionRepository>(
     userRemoteDatasource: ref.watch(userRemoteDatasourceProvider),
     transactionRemoteDatasource: ref.watch(transactionRemoteDatasourceProvider),
     productRemoteDatasource: ref.watch(productRemoteDatasourceProvider),
+    expenseRemoteDatasource: ref.watch(expenseRemoteDatasourceProvider),
     storageRemoteDataSource: ref.watch(storageRemoteDataSourceProvider),
     productLocalDatasource: ref.watch(productLocalDatasourceProvider),
     userLocalDatasource: ref.watch(userLocalDatasourceProvider),

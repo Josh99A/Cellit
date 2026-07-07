@@ -272,6 +272,31 @@ class PrinterService {
 
       ticket.separator();
 
+      if (transaction.taxRate > 0) {
+        ticket.row([
+          PrintColumn(
+            text: 'Subtotal',
+            flex: 2,
+          ),
+          PrintColumn(
+            text: CurrencyFormatter.format(transaction.subtotal),
+            flex: 1,
+            align: PrintAlign.right,
+          ),
+        ]);
+        ticket.row([
+          PrintColumn(
+            text: 'Tax (${transaction.taxRate}%)',
+            flex: 2,
+          ),
+          PrintColumn(
+            text: CurrencyFormatter.format(transaction.taxAmount),
+            flex: 1,
+            align: PrintAlign.right,
+          ),
+        ]);
+      }
+
       ticket.row([
         PrintColumn(
           text: 'Total',

@@ -12,6 +12,9 @@ class TransactionModel {
   List<OrderedProductModel>? orderedProducts;
   int receivedAmount;
   int returnAmount;
+  int subtotal;
+  double taxRate;
+  int taxAmount;
   int totalAmount;
   int totalOrderedProduct;
   String? createdAt;
@@ -27,6 +30,9 @@ class TransactionModel {
     this.orderedProducts,
     required this.receivedAmount,
     required this.returnAmount,
+    this.subtotal = 0,
+    this.taxRate = 0,
+    this.taxAmount = 0,
     required this.totalAmount,
     required this.totalOrderedProduct,
     this.createdAt,
@@ -46,6 +52,9 @@ class TransactionModel {
           : null,
       receivedAmount: json['receivedAmount'],
       returnAmount: json['returnAmount'],
+      subtotal: json['subtotal'] ?? 0,
+      taxRate: (json['taxRate'] as num?)?.toDouble() ?? 0,
+      taxAmount: json['taxAmount'] ?? 0,
       totalAmount: json['totalAmount'],
       totalOrderedProduct: json['totalOrderedProduct'],
       createdAt: json['createdAt'],
@@ -64,6 +73,9 @@ class TransactionModel {
       'orderedProducts': orderedProducts?.map((e) => e.toJson()).toList(),
       'receivedAmount': receivedAmount,
       'returnAmount': returnAmount,
+      'subtotal': subtotal,
+      'taxRate': taxRate,
+      'taxAmount': taxAmount,
       'totalAmount': totalAmount,
       'totalOrderedProduct': totalOrderedProduct,
       'createdAt': createdAt,
@@ -82,6 +94,9 @@ class TransactionModel {
       orderedProducts: entity.orderedProducts?.map((e) => OrderedProductModel.fromEntity(e)).toList(),
       receivedAmount: entity.receivedAmount,
       returnAmount: entity.returnAmount,
+      subtotal: entity.subtotal,
+      taxRate: entity.taxRate,
+      taxAmount: entity.taxAmount,
       totalAmount: entity.totalAmount,
       totalOrderedProduct: entity.totalOrderedProduct,
       createdAt: entity.createdAt ?? DateTime.now().toIso8601String(),
@@ -100,6 +115,9 @@ class TransactionModel {
       orderedProducts: orderedProducts?.map((e) => e.toEntity()).toList(),
       receivedAmount: receivedAmount,
       returnAmount: returnAmount,
+      subtotal: subtotal,
+      taxRate: taxRate,
+      taxAmount: taxAmount,
       totalAmount: totalAmount,
       totalOrderedProduct: totalOrderedProduct,
       createdAt: createdAt,

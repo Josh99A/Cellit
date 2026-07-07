@@ -28,7 +28,8 @@ import 'package:mockito/src/dummies.dart' as _i5;
 /// A class which mocks [TransactionRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTransactionRepository extends _i1.Mock implements _i2.TransactionRepository {
+class MockTransactionRepository extends _i1.Mock
+    implements _i2.TransactionRepository {
   MockTransactionRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -125,22 +126,23 @@ class MockTransactionRepository extends _i1.Mock implements _i2.TransactionRepos
                 #contains: contains,
               },
             ),
-            returnValue: _i3.Future<_i4.Result<List<_i6.TransactionEntity>>>.value(
-              _i5.dummyValue<_i4.Result<List<_i6.TransactionEntity>>>(
-                this,
-                Invocation.method(
-                  #getUserTransactions,
-                  [userId],
-                  {
-                    #orderBy: orderBy,
-                    #sortBy: sortBy,
-                    #limit: limit,
-                    #offset: offset,
-                    #contains: contains,
-                  },
+            returnValue:
+                _i3.Future<_i4.Result<List<_i6.TransactionEntity>>>.value(
+                  _i5.dummyValue<_i4.Result<List<_i6.TransactionEntity>>>(
+                    this,
+                    Invocation.method(
+                      #getUserTransactions,
+                      [userId],
+                      {
+                        #orderBy: orderBy,
+                        #sortBy: sortBy,
+                        #limit: limit,
+                        #offset: offset,
+                        #contains: contains,
+                      },
+                    ),
+                  ),
                 ),
-              ),
-            ),
           )
           as _i3.Future<_i4.Result<List<_i6.TransactionEntity>>>);
 }

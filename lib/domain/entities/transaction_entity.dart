@@ -13,6 +13,9 @@ class TransactionEntity extends Equatable {
   final List<OrderedProductEntity>? orderedProducts;
   final int receivedAmount;
   final int returnAmount;
+  final int subtotal;
+  final double taxRate;
+  final int taxAmount;
   final int totalAmount;
   final int totalOrderedProduct;
   final String? createdAt;
@@ -28,6 +31,9 @@ class TransactionEntity extends Equatable {
     this.orderedProducts,
     required this.receivedAmount,
     required this.returnAmount,
+    this.subtotal = 0,
+    this.taxRate = 0,
+    this.taxAmount = 0,
     required this.totalAmount,
     required this.totalOrderedProduct,
     this.createdAt,
@@ -44,6 +50,9 @@ class TransactionEntity extends Equatable {
     List<OrderedProductEntity>? orderdProducts,
     int? receivedAmount,
     int? returnAmount,
+    int? subtotal,
+    double? taxRate,
+    int? taxAmount,
     int? totalAmount,
     int? totalOrderedProduct,
     String? createdAt,
@@ -59,6 +68,9 @@ class TransactionEntity extends Equatable {
       orderedProducts: orderdProducts ?? orderedProducts,
       receivedAmount: receivedAmount ?? this.receivedAmount,
       returnAmount: returnAmount ?? this.returnAmount,
+      subtotal: subtotal ?? this.subtotal,
+      taxRate: taxRate ?? this.taxRate,
+      taxAmount: taxAmount ?? this.taxAmount,
       totalAmount: totalAmount ?? this.totalAmount,
       totalOrderedProduct: totalOrderedProduct ?? this.totalOrderedProduct,
       createdAt: createdAt ?? this.createdAt,
@@ -77,6 +89,9 @@ class TransactionEntity extends Equatable {
     orderedProducts,
     receivedAmount,
     returnAmount,
+    subtotal,
+    taxRate,
+    taxAmount,
     totalAmount,
     totalOrderedProduct,
     createdAt,

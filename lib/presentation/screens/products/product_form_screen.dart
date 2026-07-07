@@ -33,6 +33,7 @@ class ProductFormScreen extends ConsumerStatefulWidget {
 class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   final nameController = TextEditingController();
   final priceController = TextEditingController();
+  final costPriceController = TextEditingController();
   final stockController = TextEditingController();
   final descController = TextEditingController();
 
@@ -45,6 +46,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
       final state = ref.read(productFormNotifierProvider);
       nameController.text = state.name ?? '';
       priceController.text = state.price?.toString() ?? '';
+      costPriceController.text = state.costPrice?.toString() ?? '';
       stockController.text = state.stock?.toString() ?? '';
       descController.text = state.description ?? '';
     });
@@ -54,6 +56,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   void dispose() {
     nameController.dispose();
     priceController.dispose();
+    costPriceController.dispose();
     stockController.dispose();
     descController.dispose();
     super.dispose();
@@ -150,6 +153,10 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   _PriceField(
                     controller: priceController,
                     onChanged: notifier.onChangedPrice,
+                  ),
+                  _CostPriceField(
+                    controller: costPriceController,
+                    onChanged: notifier.onChangedCostPrice,
                   ),
                   _StockField(
                     controller: stockController,
@@ -275,6 +282,30 @@ class _PriceField extends StatelessWidget {
         controller: controller,
         labelText: 'Price',
         hintText: 'Product price...',
+        type: AppTextFieldType.currency,
+        onChanged: onChanged,
+      ),
+    );
+  }
+}
+
+class _CostPriceField extends StatelessWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  const _CostPriceField({
+    required this.controller,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSizes.padding),
+      child: AppTextField(
+        controller: controller,
+        labelText: 'Cost Price (optional)',
+        hintText: 'What this product costs you...',
         type: AppTextFieldType.currency,
         onChanged: onChanged,
       ),

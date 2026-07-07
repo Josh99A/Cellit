@@ -3,13 +3,14 @@ class DatabaseConfig {
   DatabaseConfig._();
 
   static const String dbPath = 'app_database.db';
-  static const int version = 1;
+  static const int version = 2;
 
   static const String userTableName = 'User';
   static const String productTableName = 'Product';
   static const String transactionTableName = 'Transaction';
   static const String orderedProductTableName = 'OrderedProduct';
   static const String queuedActionTableName = 'QueuedAction';
+  static const String expenseTableName = 'Expense';
 
   static const String createUserTable =
       '''
@@ -38,6 +39,7 @@ CREATE TABLE IF NOT EXISTS '$productTableName' (
     'stock' INTEGER,
     'sold' INTEGER,
     'price' INTEGER,
+    'costPrice' INTEGER,
     'description' TEXT,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -56,6 +58,9 @@ CREATE TABLE IF NOT EXISTS '$transactionTableName' (
     'createdById' TEXT,
     'receivedAmount' INTEGER,
     'returnAmount' INTEGER,
+    'subtotal' INTEGER,
+    'taxRate' REAL,
+    'taxAmount' INTEGER,
     'totalAmount' INTEGER,
     'totalOrderedProduct' INTEGER,
     'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -76,6 +81,7 @@ CREATE TABLE IF NOT EXISTS '$orderedProductTableName' (
     'name' TEXT,
     'imageUrl' TEXT,
     'price' INTEGER,
+    'costPrice' INTEGER,
     'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
     'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ('id'),
@@ -95,4 +101,29 @@ CREATE TABLE IF NOT EXISTS '$queuedActionTableName' (
     'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 ''';
+
+  static const String createExpenseTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$expenseTableName' (
+    'id' INTEGER NOT NULL,
+    'createdById' TEXT,
+    'category' TEXT,
+    'amount' INTEGER,
+    'description' TEXT,
+    'date' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('createdById') REFERENCES 'User' ('id')
+);
+''';
+
+  // Migration statements for existing installs (version 1 -> 2)
+  static const List<String> migrationV2 = [
+    "ALTER TABLE '$productTableName' ADD COLUMN 'costPrice' INTEGER",
+    "ALTER TABLE '$orderedProductTableName' ADD COLUMN 'costPrice' INTEGER",
+    "ALTER TABLE '$transactionTableName' ADD COLUMN 'subtotal' INTEGER",
+    "ALTER TABLE '$transactionTableName' ADD COLUMN 'taxRate' REAL",
+    "ALTER TABLE '$transactionTableName' ADD COLUMN 'taxAmount' INTEGER",
+  ];
 }

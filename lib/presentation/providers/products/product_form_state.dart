@@ -5,6 +5,7 @@ class ProductFormState {
   final String? imageUrl;
   final String? name;
   final int? price;
+  final int? costPrice;
   final int? stock;
   final String? description;
   final bool isLoaded;
@@ -14,6 +15,7 @@ class ProductFormState {
     this.imageUrl,
     this.name,
     this.price,
+    this.costPrice,
     this.stock,
     this.description,
     this.isLoaded = false,
@@ -24,6 +26,7 @@ class ProductFormState {
     String? imageUrl,
     String? name,
     int? price,
+    int? costPrice,
     int? stock,
     String? description,
     bool? isLoaded,
@@ -33,6 +36,7 @@ class ProductFormState {
       imageUrl: imageUrl ?? this.imageUrl,
       name: name ?? this.name,
       price: price ?? this.price,
+      costPrice: costPrice ?? this.costPrice,
       stock: stock ?? this.stock,
       description: description ?? this.description,
       isLoaded: isLoaded ?? this.isLoaded,

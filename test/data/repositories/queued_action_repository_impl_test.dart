@@ -6,6 +6,7 @@ import 'package:cellit/core/common/result.dart';
 import 'package:cellit/data/datasources/local/product_local_datasource_impl.dart';
 import 'package:cellit/data/datasources/local/queued_action_local_datasource_impl.dart';
 import 'package:cellit/data/datasources/local/user_local_datasource_impl.dart';
+import 'package:cellit/data/datasources/remote/expense_remote_datasource_impl.dart';
 import 'package:cellit/data/datasources/remote/product_remote_datasource_impl.dart';
 import 'package:cellit/data/datasources/remote/storage_remote_datasource_impl.dart';
 import 'package:cellit/data/datasources/remote/transaction_remote_datasource_impl.dart';
@@ -29,6 +30,7 @@ import 'queued_action_repository_impl_test.mocks.dart';
   UserRemoteDatasourceImpl,
   TransactionRemoteDatasourceImpl,
   ProductRemoteDatasourceImpl,
+  ExpenseRemoteDatasourceImpl,
   StorageRemoteDataSourceImpl,
   ProductLocalDatasourceImpl,
   UserLocalDatasourceImpl,
@@ -40,6 +42,7 @@ void main() {
   late MockUserRemoteDatasourceImpl mockUserRemoteDatasource;
   late MockTransactionRemoteDatasourceImpl mockTransactionRemoteDatasource;
   late MockProductRemoteDatasourceImpl mockProductRemoteDatasource;
+  late MockExpenseRemoteDatasourceImpl mockExpenseRemoteDatasource;
   late MockStorageRemoteDataSourceImpl mockStorageRemoteDataSource;
   late MockProductLocalDatasourceImpl mockProductLocalDatasource;
   late MockUserLocalDatasourceImpl mockUserLocalDatasource;
@@ -50,6 +53,7 @@ void main() {
     mockUserRemoteDatasource = MockUserRemoteDatasourceImpl();
     mockTransactionRemoteDatasource = MockTransactionRemoteDatasourceImpl();
     mockProductRemoteDatasource = MockProductRemoteDatasourceImpl();
+    mockExpenseRemoteDatasource = MockExpenseRemoteDatasourceImpl();
     mockStorageRemoteDataSource = MockStorageRemoteDataSourceImpl();
     mockProductLocalDatasource = MockProductLocalDatasourceImpl();
     mockUserLocalDatasource = MockUserLocalDatasourceImpl();
@@ -116,6 +120,7 @@ void main() {
       userRemoteDatasource: mockUserRemoteDatasource,
       transactionRemoteDatasource: mockTransactionRemoteDatasource,
       productRemoteDatasource: mockProductRemoteDatasource,
+      expenseRemoteDatasource: mockExpenseRemoteDatasource,
       storageRemoteDataSource: mockStorageRemoteDataSource,
       productLocalDatasource: mockProductLocalDatasource,
       userLocalDatasource: mockUserLocalDatasource,

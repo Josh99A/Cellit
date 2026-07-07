@@ -37,7 +37,14 @@ class DatabaseService {
     if (!await databaseFile.exists()) await databaseFile.create();
 
     // Open database
-    database = await openDatabase(path);
+    // Databases created before versioning report user_version 0 and go through onCreate,
+    // so the migration must run in both hooks
+    database = await openDatabase(
+      path,
+      version: DatabaseConfig.version,
+      onCreate: (db, version) => _migrate(db),
+      onUpgrade: (db, oldVersion, newVersion) => _migrate(db),
+    );
 
     // Create tables
     await Future.wait([
@@ -46,7 +53,21 @@ class DatabaseService {
       database.execute(DatabaseConfig.createTransactionTable),
       database.execute(DatabaseConfig.createOrderedProductTable),
       database.execute(DatabaseConfig.createQueuedActionTable),
+      database.execute(DatabaseConfig.createExpenseTable),
     ]);
+  }
+
+  Future<void> _migrate(Database db) async {
+    for (final statement in DatabaseConfig.migrationV2) {
+      try {
+        await db.execute(statement);
+      } on DatabaseException catch (e) {
+        final message = e.toString();
+        final isIgnorable = message.contains('duplicate column') || message.contains('no such table');
+
+        if (!isIgnorable) rethrow;
+      }
+    }
   }
 
   @visibleForTesting
@@ -60,6 +81,7 @@ class DatabaseService {
       database.execute(DatabaseConfig.createTransactionTable),
       database.execute(DatabaseConfig.createOrderedProductTable),
       database.execute(DatabaseConfig.createQueuedActionTable),
+      database.execute(DatabaseConfig.createExpenseTable),
     ]);
   }
 

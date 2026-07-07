@@ -9,6 +9,7 @@ import '../../../core/utilities/app_image_utils.dart';
 import '../../providers/auth/auth_notifier.dart';
 import '../../providers/currency/currency_notifier.dart';
 import '../../providers/main/main_notifier.dart';
+import '../../providers/tax/tax_notifier.dart';
 import '../../providers/theme/theme_notifier.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_dialog.dart';
@@ -29,6 +30,7 @@ class AccountScreen extends StatelessWidget {
             _ProfileButton(),
             _ThemeButton(),
             _CurrencyButton(),
+            _TaxSettingsButton(),
             _PrinterSettingsButton(),
             _AboutButton(),
             _SignOutButton(),
@@ -276,6 +278,62 @@ class _CurrencyDialogBody extends ConsumerWidget {
             );
           }).toList(),
         ),
+      ),
+    );
+  }
+}
+
+class _TaxSettingsButton extends ConsumerWidget {
+  const _TaxSettingsButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final taxRate = ref.watch(taxNotifierProvider.select((s) => s.taxRate));
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSizes.padding),
+      child: AppButton(
+        buttonColor: Theme.of(context).colorScheme.surface,
+        borderColor: Theme.of(context).colorScheme.surfaceContainer,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  Icons.percent_rounded,
+                  size: 18,
+                ),
+                const SizedBox(width: AppSizes.padding / 1.5),
+                Text(
+                  'Tax Settings',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text(
+                  '$taxRate%',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: AppSizes.padding / 1.5),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 18,
+                ),
+              ],
+            ),
+          ],
+        ),
+        onTap: () {
+          context.go('/account/tax-settings');
+        },
       ),
     );
   }
