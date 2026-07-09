@@ -58,7 +58,7 @@ class DatabaseService {
   }
 
   Future<void> _migrate(Database db) async {
-    for (final statement in DatabaseConfig.migrationV2) {
+    for (final statement in [...DatabaseConfig.migrationV2, ...DatabaseConfig.migrationV3]) {
       try {
         await db.execute(statement);
       } on DatabaseException catch (e) {

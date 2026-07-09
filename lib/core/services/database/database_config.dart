@@ -3,7 +3,7 @@ class DatabaseConfig {
   DatabaseConfig._();
 
   static const String dbPath = 'app_database.db';
-  static const int version = 2;
+  static const int version = 3;
 
   static const String userTableName = 'User';
   static const String productTableName = 'Product';
@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS '$productTableName' (
     'createdById' TEXT,
     'name' TEXT,
     'imageUrl' TEXT,
+    'barcode' TEXT,
     'stock' INTEGER,
     'sold' INTEGER,
     'price' INTEGER,
@@ -125,5 +126,10 @@ CREATE TABLE IF NOT EXISTS '$expenseTableName' (
     "ALTER TABLE '$transactionTableName' ADD COLUMN 'subtotal' INTEGER",
     "ALTER TABLE '$transactionTableName' ADD COLUMN 'taxRate' REAL",
     "ALTER TABLE '$transactionTableName' ADD COLUMN 'taxAmount' INTEGER",
+  ];
+
+  // Migration statements for existing installs (version 2 -> 3)
+  static const List<String> migrationV3 = [
+    "ALTER TABLE '$productTableName' ADD COLUMN 'barcode' TEXT",
   ];
 }

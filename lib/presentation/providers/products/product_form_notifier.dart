@@ -7,6 +7,7 @@ import '../../../core/common/result.dart';
 import '../../../core/services/image/image_file_service.dart';
 import '../../../core/utilities/console_logger.dart';
 import '../../../domain/entities/product_entity.dart';
+import '../../../domain/usecases/params/barcode_params.dart';
 import '../../../domain/usecases/params/image_upload_params.dart';
 import '../../../domain/usecases/product_usecases.dart';
 import '../../../domain/usecases/storage_usecases.dart';
@@ -30,6 +31,30 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
     throw 'Unauthenticated!';
   }
 
+  String? _normalizedBarcode() {
+    final barcode = state.barcode?.trim();
+    return (barcode == null || barcode.isEmpty) ? null : barcode;
+  }
+
+  // Returns an error message when the barcode is already used by another product
+  Future<String?> _validateBarcode(String userId, {int? excludeId}) async {
+    final barcode = _normalizedBarcode();
+    if (barcode == null) return null;
+
+    final productRepository = ref.read(productRepositoryProvider);
+    final res = await GetProductByBarcodeUsecase(productRepository).call(
+      BarcodeParams(userId: userId, barcode: barcode),
+    );
+
+    final existing = res.data;
+
+    if (res.isSuccess && existing != null && existing.id != excludeId) {
+      return 'Barcode is already used by "${existing.name}"';
+    }
+
+    return null;
+  }
+
   Future<void> initProductForm(int? productId) async {
     if (productId == null) {
       state = state.copyWith(isLoaded: true);
@@ -45,6 +70,7 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
       state = state.copyWith(
         imageUrl: product?.imageUrl,
         name: product?.name,
+        barcode: product?.barcode,
         price: product?.price,
         costPrice: product?.costPrice,
         stock: product?.stock,
@@ -62,6 +88,9 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
       final pingService = ref.read(pingServiceProvider);
       final storageRepository = ref.read(storageRepositoryProvider);
       final productRepository = ref.read(productRepositoryProvider);
+
+      final barcodeError = await _validateBarcode(userId);
+      if (barcodeError != null) return Result.failure(error: barcodeError);
 
       var imageUrl = state.imageUrl;
       String? queuedImagePath;
@@ -85,6 +114,7 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
         createdById: userId,
         name: state.name ?? '',
         imageUrl: imageUrl ?? '',
+        barcode: _normalizedBarcode(),
         stock: state.stock ?? 0,
         price: state.price ?? 0,
         costPrice: state.costPrice,
@@ -117,6 +147,9 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
       final storageRepository = ref.read(storageRepositoryProvider);
       final productRepository = ref.read(productRepositoryProvider);
 
+      final barcodeError = await _validateBarcode(userId, excludeId: id);
+      if (barcodeError != null) return Result.failure(error: barcodeError);
+
       var imageUrl = state.imageUrl;
       String? queuedImagePath;
 
@@ -140,6 +173,7 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
         createdById: userId,
         name: state.name!,
         imageUrl: imageUrl ?? '',
+        barcode: _normalizedBarcode(),
         stock: state.stock ?? 0,
         price: state.price ?? 0,
         costPrice: state.costPrice,
@@ -185,6 +219,10 @@ class ProductFormNotifier extends AutoDisposeNotifier<ProductFormState> {
 
   void onChangedName(String value) {
     state = state.copyWith(name: value);
+  }
+
+  void onChangedBarcode(String value) {
+    state = state.copyWith(barcode: value);
   }
 
   void onChangedPrice(String value) {

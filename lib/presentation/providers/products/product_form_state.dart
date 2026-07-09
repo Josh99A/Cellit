@@ -4,6 +4,7 @@ class ProductFormState {
   final File? imageFile;
   final String? imageUrl;
   final String? name;
+  final String? barcode;
   final int? price;
   final int? costPrice;
   final int? stock;
@@ -14,6 +15,7 @@ class ProductFormState {
     this.imageFile,
     this.imageUrl,
     this.name,
+    this.barcode,
     this.price,
     this.costPrice,
     this.stock,
@@ -25,6 +27,7 @@ class ProductFormState {
     File? imageFile,
     String? imageUrl,
     String? name,
+    String? barcode,
     int? price,
     int? costPrice,
     int? stock,
@@ -35,6 +38,7 @@ class ProductFormState {
       imageFile: imageFile ?? this.imageFile,
       imageUrl: imageUrl ?? this.imageUrl,
       name: name ?? this.name,
+      barcode: barcode ?? this.barcode,
       price: price ?? this.price,
       costPrice: costPrice ?? this.costPrice,
       stock: stock ?? this.stock,

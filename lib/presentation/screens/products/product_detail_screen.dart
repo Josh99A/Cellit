@@ -60,6 +60,7 @@ class ProductDetailScreen extends ConsumerWidget {
                         createdAt: product.createdAt,
                         updatedAt: product.updatedAt,
                       ),
+                      _ProductBarcode(barcode: product.barcode),
                       _ProductPrice(price: product.price),
                       _ProductStock(stock: product.stock),
                       _ProductSold(sold: product.sold),
@@ -186,6 +187,36 @@ class _ProductName extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _ProductBarcode extends StatelessWidget {
+  final String? barcode;
+
+  const _ProductBarcode({required this.barcode});
+
+  @override
+  Widget build(BuildContext context) {
+    if (barcode == null || barcode!.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSizes.padding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Barcode",
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          Text(
+            barcode!,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

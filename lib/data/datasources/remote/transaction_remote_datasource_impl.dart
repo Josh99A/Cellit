@@ -246,12 +246,14 @@ class TransactionRemoteDatasourceImpl extends TransactionDatasource {
     String? contains,
   }) async {
     try {
-      var query = _firebaseFirestore
-          .collection('Transaction')
-          .where('createdById', isEqualTo: userId)
-          .where('id', arrayContains: contains)
-          .orderBy(orderBy, descending: sortBy == 'DESC')
-          .limit(limit);
+      var baseQuery = _firebaseFirestore.collection('Transaction').where('createdById', isEqualTo: userId);
+
+      // Firestore rejects a null arrayContains value, so only filter when a search term is given
+      if (contains != null && contains.isNotEmpty) {
+        baseQuery = baseQuery.where('id', arrayContains: contains);
+      }
+
+      var query = baseQuery.orderBy(orderBy, descending: sortBy == 'DESC').limit(limit);
 
       if (offset != null) {
         DocumentSnapshot<Object?>? lastSnapshot;

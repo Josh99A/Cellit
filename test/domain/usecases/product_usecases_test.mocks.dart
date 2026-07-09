@@ -60,6 +60,22 @@ class MockProductRepository extends _i1.Mock implements _i2.ProductRepository {
           as _i3.Future<_i4.Result<_i6.ProductEntity?>>);
 
   @override
+  _i3.Future<_i4.Result<_i6.ProductEntity?>> getProductByBarcode(
+    String? userId,
+    String? barcode,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getProductByBarcode, [userId, barcode]),
+            returnValue: _i3.Future<_i4.Result<_i6.ProductEntity?>>.value(
+              _i5.dummyValue<_i4.Result<_i6.ProductEntity?>>(
+                this,
+                Invocation.method(#getProductByBarcode, [userId, barcode]),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Result<_i6.ProductEntity?>>);
+
+  @override
   _i3.Future<_i4.Result<int>> createProduct(_i6.ProductEntity? product) =>
       (super.noSuchMethod(
             Invocation.method(#createProduct, [product]),

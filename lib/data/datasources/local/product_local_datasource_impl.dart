@@ -77,6 +77,24 @@ class ProductLocalDatasourceImpl extends ProductDatasource {
   }
 
   @override
+  Future<Result<ProductModel?>> getProductByBarcode(String userId, String barcode) async {
+    try {
+      var res = await _databaseService.database.query(
+        DatabaseConfig.productTableName,
+        where: 'createdById = ? AND barcode = ?',
+        whereArgs: [userId, barcode],
+        limit: 1,
+      );
+
+      if (res.isEmpty) return Result.success(data: null);
+
+      return Result.success(data: ProductModel.fromJson(res.first));
+    } catch (e) {
+      return Result.failure(error: e);
+    }
+  }
+
+  @override
   Future<Result<List<ProductModel>>> getAllUserProducts(String userId) async {
     try {
       var res = await _databaseService.database.query(
@@ -105,8 +123,8 @@ class ProductLocalDatasourceImpl extends ProductDatasource {
     try {
       var res = await _databaseService.database.query(
         DatabaseConfig.productTableName,
-        where: 'createdById = ? AND name LIKE ?',
-        whereArgs: [userId, "%${contains ?? ''}%"],
+        where: 'createdById = ? AND (name LIKE ? OR barcode LIKE ?)',
+        whereArgs: [userId, "%${contains ?? ''}%", "%${contains ?? ''}%"],
         orderBy: '$orderBy $sortBy',
         limit: limit,
         offset: offset,

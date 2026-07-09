@@ -5,6 +5,7 @@ class ProductModel {
   String createdById;
   String name;
   String imageUrl;
+  String? barcode;
   int stock;
   int sold;
   int price;
@@ -18,6 +19,7 @@ class ProductModel {
     required this.createdById,
     required this.name,
     required this.imageUrl,
+    this.barcode,
     required this.stock,
     required this.sold,
     required this.price,
@@ -33,6 +35,7 @@ class ProductModel {
       createdById: json['createdById'],
       name: json['name'],
       imageUrl: json['imageUrl'],
+      barcode: json['barcode'],
       stock: json['stock'],
       sold: json['sold'],
       price: json['price'],
@@ -49,6 +52,7 @@ class ProductModel {
       'createdById': createdById,
       'name': name,
       'imageUrl': imageUrl,
+      'barcode': barcode,
       'stock': stock,
       'sold': sold,
       'price': price,
@@ -65,6 +69,7 @@ class ProductModel {
       createdById: entity.createdById,
       name: entity.name,
       imageUrl: entity.imageUrl,
+      barcode: entity.barcode,
       stock: entity.stock,
       sold: entity.sold ?? 0,
       price: entity.price,
@@ -81,6 +86,7 @@ class ProductModel {
       createdById: createdById,
       name: name,
       imageUrl: imageUrl,
+      barcode: barcode,
       stock: stock,
       sold: sold,
       price: price,

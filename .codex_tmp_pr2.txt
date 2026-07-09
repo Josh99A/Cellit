@@ -1,0 +1,604 @@
+
+
+=== PAGE 1 ===
+
+ 
+SYSC 5708 Model-Driven Development of 
+Real-Time and Distributed Software Fall'2017 
+PROJECT REPORT 
+POINT OF SALES TERMINAL (POST) 
+DEEPESH KHANEJA 
+ 
+ 
+ 
+ 
+Submitted to Professor Dorina C. Petriu 
+13 December, 2017 
+Carleton University 
+
+
+=== PAGE 2 ===
+
+Problem Statement 
+There is always a need of an efficient system that can generate and maintain the transaction receipts, 
+inventory reports and sales records in the big retail businesses like Restaurants, Gas Stations, Convenience 
+Stores, Retail Stores (Walmart, Loblaws) etc. The pu rpose of this system is to automate the checkout 
+process, providing faster services and better purchasing experience for customers. Moreover, the system 
+can keep the record of sales in the database operated on cloud which can be updated, modified, deleted 
+as whenever is the case or required. Point of Sales(POS) is a computerized system managing sales and 
+performs simple day to day operations in the retail stores. POS terminal building involves interfacing 
+printer, bar code scanner, computer,  Debit/Credit Card Reader, keyboard, touch screen input, weighing 
+machine and software on a CPU to run operations in a store. When the customer arrives with all the items 
+to be purchased, the cashier scans item, pre -entered price shows up and the items are added with all 
+information to the current running transaction. The barcode reader after scanning sends signal to retrieve 
+name and price of item from the backend catalog and further interacts with inventory system for any 
+discrepancy. The display interfaced will show the  individual price while scanning of each item and total 
+price to the customer including all sales tax. The customer will decide the type of payment viz. cash, credit 
+or debit card, coupons, Points/Promotion Card or cheque. On completion of successful trans action 
+(payment done), the POS software updates the inventory and generates a receipt for customer and 
+transaction record for Merchant. The cashier handovers the receipt record to the customer.  
+ 
+In addition, the system requires user log in to use POS soft ware. Cashiers, Managers and administrators 
+are the users that can access POS. Further, the protected and confidential system management functions 
+can only be accessed by administrators for security purposes. These systems should be fault tolerant and 
+have the capability to run offline sales and cash management when remote services are temporarily 
+unavailable. It is assumed that self -checkout functionality is missing in the system described and always 
+involves cashier for the transactions. 
+ 
+COMET METHODOLOGY 
+This project leverages COMET methodology to develop the Point of Sales System from  high level to low 
+level designing. This method consists of three steps for software development, requirement modelling, 
+analysis modelling and design modelling. These steps are described in detail with the supporting diagrams 
+in the subsequent Sections. 
+ 
+ 
+1. Requirement Modelling 
+This section of the report is the starting point of building our system describing initial screening of the 
+problem statement. The concept of basic design is construed into possible use cases and the diagram is 
+termed as Use  Case Diagram. It includes ident ifying primary actors, system under development and its 
+functionality in terms of used cases. For the selected use cases, a narrative description is provided.  
+ 
+Fig 1. below depicts the use case diagram of POS terminal and the most important two use cases found 
+are highlighted in green color. Checkout including scanning, applying reward points, calculating total price 
+and payment is the first selected use case. Payment, which is part of checkout, can be by Debit/Credit, 
+Cash or Loyality Card is the second use case diagram. 
+ 
+ 
+ 
+
+=== PAGE 3 ===
+
+a.  USE CASE DIAGRAM 
+ 
+ 
+Fig. 1 Use Case Diagram of Point of Sales System 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 4 ===
+
+ 
+b.1 Use Case: Check out -Textual Description 
+ 
+Use Case Name Check out 
+Summary Customer finishes purchasing items and make payment 
+ 
+Actors Store Customer and Cashier 
+Preconditions Customer queue up to reach POS terminal and cashier is 
+available 
+Description 1. Customer arrives at POS terminal with all items to be 
+purchased 
+2. Cashier login and starts new sale 
+3. Cashier scans the items to be purchased using bar code 
+scanner  
+4. System retrieves item specifications from catalogue and 
+records sale line item, and  presents description, price, 
+quantity and running total. Cashier repeat until last item is 
+scanned. 
+5. System calculates total price with taxes and display to 
+customer 
+6. Cashier asks the mode of payment 
+7. Customer selects mode and make payment, and system 
+handles the payment. 
+8. System records completed sale and sends sale information 
+to the external Inventory system for stock update. 
+9. System presents the receipt. 
+10. Customer leaves with receipt and all goods purchased. 
+ 
+Alternatives 1. Customer cancels the transaction 
+2. Cashier suspends the sale 
+3. Cashier login failed. 
+4. System hangs up or system crashes. 
+5. Customer chooses to pay by cash but don’t have enough 
+cash 
+Post Conditions Payment is approved. Sale is recorded and saved in the 
+system. Receipt is printed and inventory is updated. 
+Table 1: Textual Description of Use Case Checkout 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== PAGE 5 ===
+
+ 
+b.2  Use Case: Payment – Textual Description 
+ 
+Use Case Name Payment 
+Summary Customer chooses the mode of payment 
+Actors Store Customer  
+Preconditions Cashier scanned all the items and total is available on display 
+screen 
+Description 1. Cashier asks for the mode of payment 
+2. Customer chooses the mode of payment  either 
+debit/credit, cash or reward/gift card. 
+3. Cashier selects the method on POS software. 
+4. Customer make the payment 
+5. Payment approved message and receipt is generated. 
+Alternatives 1. Customer chooses to pay by any combination of three 
+payment methods. 
+2. If customer chooses to pay by debit/ credit but enters the 
+wrong pin. 
+3. If customer selects card/debit payment and tap the card 
+but tap is not applicable. 
+4. If customer chooses to pay by cash but don’t have sufficient 
+amount. 
+5. If customer chooses to pay by gift or reward card but the 
+balance is not enough. 
+6. If customer enters the wrong pin three times, the card will 
+be blocked. 
+7. If the total sale amount is above $100, the tap on  card will 
+not work. 
+Post Conditions Payment is approved. 
+Table 2: Textual Description of Use Case Payment 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== PAGE 6 ===
+
+ 
+2. Analysis Modelling 
+After the identification of use cases, next step is to  develop the structure of the model in progress. The 
+two models –  static and dynamic are developed 
+It involves identifying physical classes taking part in the system through physical classes diagram. Next, 
+develop system context model demonstrating interaction among the classes and objects.  Entity -class 
+diagram is a more detailed and complex version of physical class diagram stating all the operations and 
+data storage done by entity classes. 
+ 
+2.1  Static Analysis 
+This step in the analysis phase determines the structural details of classes in the problem domain. It makes 
+use of object structuring criteria to determine which objects are required for the analysis model. 
+ 
+ 
+a. Physical Classes Diagram 
+ 
+  
+Fig. 2 Physical Classes Diagram 
+ 
+ 
+ 
+Physical class diagram in Fig.2 illustrates the abstract classes of the system . Our system is POS terminal 
+where a customer is served and consists all the hardware and software interface to complete checkout 
+and payment. 
+ 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 7 ===
+
+ 
+ 
+ 
+ 
+ 
+ 
+b. System Context Diagram 
+ 
+ 
+Fig. 3 System Context Diagram of POST 
+ 
+ 
+In the figure 3, it can be observed that external actors interact with the components of the system POS 
+Terminal software and components provide input or output to the system. 
+ 
+ 
+c. Entity Class Diagram 
+The Entity class diagram in the figure 4 is quite self-explanatory. In order to provide more readability, the 
+diagram contains classes and each class has its own attribute and operations to perform. Each store 
+
+
+=== PAGE 8 ===
+
+contains one or more POS terminals operated by one or more cashiers. The customer arrives in the store 
+containing lot of items for purchasing and each item is described by product specification. Each store has 
+a product catalogue containing product specification. They are stored in the database of the organization 
+operated over cloud. The POS software captures all the sale transactions initiated by cashiers and further 
+managed by a store Manager. The customer completes the transaction by choosing one of the following 
+payment method – Cash, Debit/Credit or Loyalty Points Redemption. Each customer may or may not have 
+a Loyalty points card. 
+ 
+Fig. 4 Entity Class Diagram of POS system 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 9 ===
+
+d. External and Boundary Classes 
+Fig. 5 represents external classes and boundary objects diagram. This diagram provides internal details of 
+the system under development and providing interfaces to the external devices. On the other hand, 
+System Context Diagram considers the system to be black box hiding all internal details. 
+ 
+Fig. 5 External classes and boundary Object Diagram 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+2.2 Dynamic Analysis 
+Realization of use cases from the requirement model i s done in this analysis to show objects which 
+participate in each use case and their interaction. It consists of developing communication or sequence 
+diagram along with state charts to show state dependent objects. 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 10 ===
+
+a. Sequence Diagram of POS with no internal Details 
+ 
+ 
+Fig. 6 Sequence Diagram of System with no internal details 
+ 
+The sequence diagram shown above in figure considers the POS system as black box and two actors 
+customer and cashier perform their operations. The happy path would be all items scanned successfully, 
+payment is approved and receipt is generated. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 11 ===
+
+b. Sequence Diagram of Checkout 
+ 
+ 
+ 
+Fig. 7 Sequence Diagram of Check Out 
+  
+ 
+In the sequence diagram of Checkout  in fig. 7, primary actors cashier and customer interacts with other 
+objects of the system  to complete the process. POS server, an application running on the computer is 
+responsible for interfacing objects printer, display screen, bar code scanner. The server stores all their 
+information in computer memory as well as in the database of product catalogue, product specification 
+and inventory system on cloud. Sales in Line object represents the sales transaction of items to be sold. 
+The happy paths are shown in red and blue bounding boxes. Scanning all the items through b ar code 
+scanner by cashier, retrieving their information, displaying their unit prices and preparing a list completes 
+the first phase of checkout process. 
+ 
+Second phase is the successful payment made by the customer for which system generates receipt and 
+cashier supply receipt to the customer. 
+ 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 12 ===
+
+c. State Machine of Checkout 
+The process of check out involves authorization of the user i.e. cashier with login id and password. The 
+whole process is represented in the state machine of Checkout where system start s in idle state after 
+login. As soon as the scanning of first item start, a new sale is created providing header to the bill receipt 
+and items are lined up after retrieving their specification. Further scanning of items just adds up in the 
+existing list and reaches idle state if no scanning is done. In the event of scan error due to bar code error, 
+the cashier performs manual procedure of entering price, name and qty in the list. Once the last item 
+signal is send to the application, the payment method is invoked which is chosen by the customer. Receipt 
+is generated, inventory is updated and transaction is completed on approval of payment.    
+  
+ 
+Fig. 8 State Machine of Checkout 
+ 
+d. Sequence Diagram of Payment 
+The sequence diagram of payment  in Fig. 9 and 10  is the expansion of method of payment chosen by a 
+customer during checkout. There are three possible options either by cash, credit/debit or Gift/Loyalty 
+card. The sequence diagram shows all three options and possible alternatives. Happy paths are highlighted 
+in the bounding box. Payment by credit/debit either requires tap or four digits secured pin. The card will 
+be blocked if the wrong pins are entered three times and tap will not be applicable if the amount of 
+purchase is greater than $100.On the other hand, payment by cash or Loyalty or card requires balance to 
+be greater than or equal to the amount purchased. If the tap on the card is not activated, it requires the 
+customer to insert card and enter secure pin to complete payment. The payment can also b e made by 
+combination of either two from the three methods provided.  
+
+
+=== PAGE 13 ===
+
+ 
+Fig. 9 Sequence Diagram of Payment first part 
+ 
+ 
+
+
+=== PAGE 14 ===
+
+ 
+Fig. 10 Sequence diagram of Payment second part 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 15 ===
+
+e. State Machine of Payment 
+ 
+Fig. 11 State Machine of Payment 
+ 
+ 
+The state machine in fig. 11 is an extension of payment method rom Checkout process. Once the payment 
+state is reached, the system will wait for customer’s selection. If the chosen method is either cash or 
+Gift/Loyalty card then the amount verification is done to ensure the balance is greater or equal to amount. 
+Otherwise, if atm card payment is selected then after payment authorization, the card reader will wait for 
+either tap or card insertion. The pin will be required if the card is inserted requiring pin validation. Aft er 
+three wrong attempts, card will be blocked and customer’s selection will be required again. The 
+transaction approved state will be reached if the payment is successful from either three methods or 
+combination of two. 
+
+
+=== PAGE 16 ===
+
+ 
+The state machines described above follows the path of operations described in sequence diagrams. The 
+possible alternatives and happy paths are included well. The sequence diagrams depict the process  as 
+described in use cases  in sequential manner  whereas state charts depict that sequence th rough states 
+maintaining the semantics of sequence diagrams.    
+ 
+ 
+f. Integrated State Machine of Checkout and Payment 
+ 
+ 
+Fig. 12 Integrated State chart of Checkout and Payment 
+ 
+The integrated state  chart in fig. 12  consists of five composite states – Authorization state, Idle state, 
+Processing new sale, Processing Payment state and Transaction completion state.  The state machines of 
+checkout and payment are merged together in the integrated version and composite st ates are defined 
+including possible alternatives. The states are grouped together to form super states or composite states 
+representing a hierarchical structure. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 17 ===
+
+ 
+3. Design Modelling 
+In this last step of Comet Methodology, the software architecture is designed mapping analysis model to 
+operational environment. Using subsystem criteria, the system is structured into subsystems. The 
+following sections illustrate with diagram the process of subsystem structuring, designing high and low 
+level details. Finally, designing the concurrent task architecture of subsystems. The final distributed 
+architecture is shown which integrates the lowlevel details of subsystems to show concurrent 
+collaboration diagram. Lastly, an example deployment diagram is shown in fig. 22. 
+ 
+ 
+3.1 Overall Software Architecture 
+ 
+a. Structure of Subsystems 
+ 
+Fig. 13 Structuring of subsystems 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 18 ===
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+b. Defining Interfaces 
+ 
+ 
+Fig. 14 Identifying Interfaces used in Low level and Distributed Diagrams 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 19 ===
+
+ 
+ 
+ 
+ 
+ 
+ 
+c.1 High Level Distributed Architecture of the POS system 
+ 
+ 
+Fig. 15 High Level structure of whole system 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 20 ===
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+c.2 Low Level Diagram of individual subsystems 
+ 
+ 
+Fig. 16 Low level Diagram of Application Control Subsystem 
+ 
+ 
+ 
+ 
+                            
+Fig. 17 Low level Diagram of Data Subsystem 
+ 
+ 
+
+
+=== PAGE 21 ===
+
+ 
+Fig. 18 Low Level Diagram of Payment Subsystem 
+ 
+ 
+ 
+ 
+Fig. 19 Low Level Diagram of Sales Record Subsystem 
+ 
+ 
+ 
+ 
+Fig. 20 Low Level Diagram of Application Server Subsystem 
+ 
+ 
+ 
+
+
+=== PAGE 22 ===
+
+3.2 Distributed Task Architecture Diagram 
+This diagram is the integration of individual subsystems defined above illustrating the concurrent task 
+architecture. Instead of designing the individual distributed components, this is a attempt to collaborate 
+all of them into one subsystem. However, each sub system can be distinguished from the other subsystem 
+in the fig. 21. 
+ 
+ 
+Fig. 21 Distributed Task Architecture of Concurrent Collaboration Diagram of whole system 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=== PAGE 23 ===
+
+ 
+ 
+ 
+ 
+Deployment Diagram 
+ 
+ 
+ 
+ 
+Conclusion and Future Work 
+POS is an efficient method to automate the checkout process, providing faster and better customer experience.  It 
+can be found almost in every Retail store, Restaurants, Clubs and Bars, Supermarkets . Comet methodology proves 
+useful in building system from requirement modelling to design modelling.  Future work include s developing the 
+adding self-checkout functionalities. 
+ 
+ 
+ 
+References 
+■ http://www.programsformca.com/2012/03/uml-diagrams-point-of-sale-terminal.html 
+■ http://www.csie.ntut.edu.tw/sdrc/files/course/20061201/SoftwareRequirementSpecification.pdf 
+■ http://softeng.polito.it/tongji/SE/ex/The-POS-system.pdf 
+■ “Restaurant Point-of-Sale System”, by Moustafa H.Abdelbaky et al. 
+ 

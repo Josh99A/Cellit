@@ -15,6 +15,7 @@ import '../../widgets/app_dialog.dart';
 import '../../widgets/app_empty_state.dart';
 import '../../widgets/app_loading_more_indicator.dart';
 import '../../widgets/app_progress_indicator.dart';
+import '../../widgets/app_scan_button.dart';
 import '../../widgets/app_snack_bar.dart';
 import '../../widgets/app_text_field.dart';
 import '../products/components/products_card.dart';
@@ -146,7 +147,12 @@ class _Body extends ConsumerWidget {
                 titleSpacing: 0,
                 title: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding),
-                  child: _SearchField(controller: searchFieldController),
+                  child: Row(
+                    children: [
+                      Expanded(child: _SearchField(controller: searchFieldController)),
+                      const _ScanButton(),
+                    ],
+                  ),
                 ),
               ),
               SliverLayoutBuilder(
@@ -359,6 +365,58 @@ class _SearchField extends ConsumerWidget {
         ref.read(productsNotifierProvider.notifier).getAllProducts(contains: controller.text);
       },
     );
+  }
+}
+
+class _ScanButton extends ConsumerWidget {
+  const _ScanButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!AppScanButton.isSupported) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(left: AppSizes.padding / 2),
+      child: AppScanButton(
+        borderRadius: AppSizes.radius,
+        onScanned: (barcode) => onScanned(ref, barcode),
+      ),
+    );
+  }
+
+  void onScanned(WidgetRef ref, String barcode) async {
+    final productsNotifier = ref.read(productsNotifierProvider.notifier);
+    final homeNotifier = ref.read(homeNotifierProvider.notifier);
+
+    final res = await productsNotifier.getProductByBarcode(barcode);
+
+    if (res.isFailure) {
+      AppSnackBar.show(res.error?.toString() ?? 'Failed to find product');
+      return;
+    }
+
+    final product = res.data;
+
+    if (product == null) {
+      AppSnackBar.show('No product found for barcode $barcode');
+      return;
+    }
+
+    if (product.stock <= 0) {
+      AppSnackBar.show('${product.name} is out of stock');
+      return;
+    }
+
+    final homeState = ref.read(homeNotifierProvider);
+    final currentQty = homeState.orderedProducts.where((e) => e.productId == product.id).firstOrNull?.quantity ?? 0;
+
+    if (currentQty >= product.stock) {
+      AppSnackBar.show('Only ${product.stock} of ${product.name} in stock');
+      return;
+    }
+
+    homeNotifier.onAddOrderedProduct(product, currentQty + 1);
+    AppSnackBar.show('${product.name} added to cart');
   }
 }
 

@@ -2,6 +2,7 @@ import '../../core/common/result.dart';
 import '../../core/usecase/usecase.dart';
 import '../entities/product_entity.dart';
 import '../repositories/product_repository.dart';
+import 'params/barcode_params.dart';
 import 'params/base_params.dart';
 
 class SyncAllUserProductsUsecase extends Usecase<Result, String> {
@@ -36,6 +37,16 @@ class GetProductUsecase extends Usecase<Result, int> {
 
   @override
   Future<Result<ProductEntity?>> call(int params) async => _productRepository.getProduct(params);
+}
+
+class GetProductByBarcodeUsecase extends Usecase<Result, BarcodeParams> {
+  GetProductByBarcodeUsecase(this._productRepository);
+
+  final ProductRepository _productRepository;
+
+  @override
+  Future<Result<ProductEntity?>> call(BarcodeParams params) async =>
+      _productRepository.getProductByBarcode(params.userId, params.barcode);
 }
 
 class CreateProductUsecase extends Usecase<Result, ProductEntity> {

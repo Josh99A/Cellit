@@ -138,6 +138,31 @@ class ProductRepositoryImpl extends ProductRepository {
   }
 
   @override
+  Future<Result<ProductEntity?>> getProductByBarcode(String userId, String barcode) async {
+    try {
+      final local = await productLocalDatasource.getProductByBarcode(userId, barcode);
+      if (local.isFailure) return Result.failure(error: local.error!);
+
+      if (local.data != null) return Result.success(data: local.data!.toEntity());
+
+      if (pingService.isConnected) {
+        final remote = await productRemoteDatasource.getProductByBarcode(userId, barcode);
+        if (remote.isFailure) return Result.failure(error: remote.error!);
+
+        if (remote.data != null) {
+          // Cache the remote product locally for offline lookups
+          await productLocalDatasource.createProduct(remote.data!);
+          return Result.success(data: remote.data!.toEntity());
+        }
+      }
+
+      return Result.success(data: null);
+    } catch (e) {
+      return Result.failure(error: e);
+    }
+  }
+
+  @override
   Future<Result<int>> createProduct(ProductEntity product) async {
     try {
       final data = ProductModel.fromEntity(product);

@@ -17,6 +17,7 @@ import '../../presentation/screens/products/product_form_screen.dart';
 import '../../presentation/screens/products/products_screen.dart';
 import '../../presentation/screens/reports/expense_form_screen.dart';
 import '../../presentation/screens/reports/reports_screen.dart';
+import '../../presentation/screens/scanner/barcode_scanner_screen.dart';
 import '../../presentation/screens/transactions/transaction_detail_screen.dart';
 import '../../presentation/screens/transactions/transactions_screen.dart';
 import '../../presentation/screens/welcome/welcome_screen.dart';
@@ -80,6 +81,7 @@ class AppRoutes {
         _main(),
         _signIn(),
         _error(),
+        _barcodeScanner(),
       ],
     );
   }
@@ -100,6 +102,16 @@ class AppRoutes {
         }
 
         return ErrorScreen(param: state.extra as ErrorScreenParam);
+      },
+    );
+  }
+
+  GoRoute _barcodeScanner() {
+    return GoRoute(
+      path: '/barcode-scanner',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) {
+        return const BarcodeScannerScreen();
       },
     );
   }

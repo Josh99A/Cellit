@@ -6,6 +6,8 @@ abstract class ProductRepository {
 
   Future<Result<ProductEntity?>> getProduct(int productId);
 
+  Future<Result<ProductEntity?>> getProductByBarcode(String userId, String barcode);
+
   Future<Result<int>> createProduct(ProductEntity product);
 
   Future<Result<void>> updateProduct(ProductEntity product);

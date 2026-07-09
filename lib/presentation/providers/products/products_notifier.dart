@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/di/app_providers.dart';
+import '../../../core/common/result.dart';
+import '../../../domain/entities/product_entity.dart';
+import '../../../domain/usecases/params/barcode_params.dart';
 import '../../../domain/usecases/params/base_params.dart';
 import '../../../domain/usecases/product_usecases.dart';
 import '../auth/auth_notifier.dart';
@@ -55,6 +58,19 @@ class ProductsNotifier extends Notifier<ProductsState> {
     } else {
       state = state.copyWith(isLoadingMore: false);
       throw Exception(res.error?.toString() ?? 'Failed to load data');
+    }
+  }
+
+  Future<Result<ProductEntity?>> getProductByBarcode(String barcode) async {
+    try {
+      final userId = _requireUserId();
+      final productRepository = ref.read(productRepositoryProvider);
+
+      return await GetProductByBarcodeUsecase(productRepository).call(
+        BarcodeParams(userId: userId, barcode: barcode),
+      );
+    } catch (e) {
+      return Result.failure(error: e);
     }
   }
 }

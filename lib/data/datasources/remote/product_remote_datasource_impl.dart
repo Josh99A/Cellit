@@ -56,6 +56,25 @@ class ProductRemoteDatasourceImpl extends ProductDatasource {
   }
 
   @override
+  Future<Result<ProductModel?>> getProductByBarcode(String userId, String barcode) async {
+    try {
+      var res = await _firebaseFirestore
+          .collection('Product')
+          .where('createdById', isEqualTo: userId)
+          .where('barcode', isEqualTo: barcode)
+          .limit(1)
+          .get();
+
+      var doc = res.docs.firstOrNull;
+      if (doc == null) return Result.success(data: null);
+
+      return Result.success(data: ProductModel.fromJson(doc.data()));
+    } catch (e) {
+      return Result.failure(error: e);
+    }
+  }
+
+  @override
   Future<Result<List<ProductModel>>> getAllUserProducts(String userId) async {
     try {
       var res = await _firebaseFirestore.collection('Product').where('createdById', isEqualTo: userId).get();
@@ -80,12 +99,14 @@ class ProductRemoteDatasourceImpl extends ProductDatasource {
       // Instead, use query cursors. Get last document snapshot then pass it to startAfterDocument
       // https://firebase.google.com/docs/firestore/query-data/query-cursors
 
-      var query = _firebaseFirestore
-          .collection('Product')
-          .where('createdById', isEqualTo: userId)
-          .where('name', arrayContains: contains)
-          .orderBy(orderBy, descending: sortBy == 'DESC')
-          .limit(limit);
+      var baseQuery = _firebaseFirestore.collection('Product').where('createdById', isEqualTo: userId);
+
+      // Firestore rejects a null arrayContains value, so only filter when a search term is given
+      if (contains != null && contains.isNotEmpty) {
+        baseQuery = baseQuery.where('name', arrayContains: contains);
+      }
+
+      var query = baseQuery.orderBy(orderBy, descending: sortBy == 'DESC').limit(limit);
 
       if (offset != null) {
         DocumentSnapshot<Object?>? lastSnapshot;

@@ -15,6 +15,7 @@ import '../../widgets/app_button.dart';
 import '../../widgets/app_dialog.dart';
 import '../../widgets/app_icon_button.dart';
 import '../../widgets/app_progress_indicator.dart';
+import '../../widgets/app_scan_button.dart';
 import '../../widgets/app_snack_bar.dart';
 import '../../widgets/app_text_field.dart';
 
@@ -32,6 +33,7 @@ class ProductFormScreen extends ConsumerStatefulWidget {
 
 class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   final nameController = TextEditingController();
+  final barcodeController = TextEditingController();
   final priceController = TextEditingController();
   final costPriceController = TextEditingController();
   final stockController = TextEditingController();
@@ -45,6 +47,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
 
       final state = ref.read(productFormNotifierProvider);
       nameController.text = state.name ?? '';
+      barcodeController.text = state.barcode ?? '';
       priceController.text = state.price?.toString() ?? '';
       costPriceController.text = state.costPrice?.toString() ?? '';
       stockController.text = state.stock?.toString() ?? '';
@@ -55,6 +58,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   @override
   void dispose() {
     nameController.dispose();
+    barcodeController.dispose();
     priceController.dispose();
     costPriceController.dispose();
     stockController.dispose();
@@ -149,6 +153,10 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   _NameField(
                     controller: nameController,
                     onChanged: notifier.onChangedName,
+                  ),
+                  _BarcodeField(
+                    controller: barcodeController,
+                    onChanged: notifier.onChangedBarcode,
                   ),
                   _PriceField(
                     controller: priceController,
@@ -259,6 +267,39 @@ class _NameField extends StatelessWidget {
         controller: controller,
         labelText: 'Name',
         hintText: 'Product name...',
+        onChanged: onChanged,
+      ),
+    );
+  }
+}
+
+class _BarcodeField extends StatelessWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  const _BarcodeField({
+    required this.controller,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSizes.padding),
+      child: AppTextField(
+        controller: controller,
+        labelText: 'Barcode (optional)',
+        hintText: 'Scan or enter barcode...',
+        suffixWidget: Padding(
+          padding: const EdgeInsets.all(AppSizes.padding / 2),
+          child: AppScanButton(
+            padding: EdgeInsets.zero,
+            onScanned: (barcode) {
+              controller.text = barcode;
+              onChanged(barcode);
+            },
+          ),
+        ),
         onChanged: onChanged,
       ),
     );

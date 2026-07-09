@@ -476,6 +476,22 @@ class MockProductRemoteDatasourceImpl extends _i1.Mock
           as _i3.Future<_i5.Result<_i13.ProductModel?>>);
 
   @override
+  _i3.Future<_i5.Result<_i13.ProductModel?>> getProductByBarcode(
+    String? userId,
+    String? barcode,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getProductByBarcode, [userId, barcode]),
+            returnValue: _i3.Future<_i5.Result<_i13.ProductModel?>>.value(
+              _i7.dummyValue<_i5.Result<_i13.ProductModel?>>(
+                this,
+                Invocation.method(#getProductByBarcode, [userId, barcode]),
+              ),
+            ),
+          )
+          as _i3.Future<_i5.Result<_i13.ProductModel?>>);
+
+  @override
   _i3.Future<_i5.Result<List<_i13.ProductModel>>> getAllUserProducts(
     String? userId,
   ) =>
@@ -740,6 +756,22 @@ class MockProductLocalDatasourceImpl extends _i1.Mock
               _i7.dummyValue<_i5.Result<_i13.ProductModel?>>(
                 this,
                 Invocation.method(#getProduct, [id]),
+              ),
+            ),
+          )
+          as _i3.Future<_i5.Result<_i13.ProductModel?>>);
+
+  @override
+  _i3.Future<_i5.Result<_i13.ProductModel?>> getProductByBarcode(
+    String? userId,
+    String? barcode,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getProductByBarcode, [userId, barcode]),
+            returnValue: _i3.Future<_i5.Result<_i13.ProductModel?>>.value(
+              _i7.dummyValue<_i5.Result<_i13.ProductModel?>>(
+                this,
+                Invocation.method(#getProductByBarcode, [userId, barcode]),
               ),
             ),
           )

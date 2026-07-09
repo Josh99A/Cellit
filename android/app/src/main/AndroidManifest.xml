@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for barcode scanning with mobile_scanner -->
+    <uses-permission android:name="android.permission.CAMERA"/>
     <application
         android:label="Cellit"
         android:name="${applicationName}"

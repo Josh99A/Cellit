@@ -10,6 +10,8 @@ abstract class ProductDatasource {
 
   Future<Result<ProductModel?>> getProduct(int id);
 
+  Future<Result<ProductModel?>> getProductByBarcode(String userId, String barcode);
+
   Future<Result<List<ProductModel>>> getAllUserProducts(String userId);
 
   Future<Result<List<ProductModel>>> getUserProducts(
